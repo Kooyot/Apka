@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#ff6b2b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>DIET MASTER V7 — ULTRA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+:root{
+--bg:#06090f;--bg2:#0c1018;--bg3:#131a28;--bg4:#1a2336;--bg5:#243048;
+--or:#ff6b2b;--or2:#ff8f5e;--or-g:rgba(255,107,43,.1);
+--gr:#34d399;--gr-g:rgba(52,211,153,.1);
+--rd:#f87171;--rd-g:rgba(248,113,113,.1);
+--bl:#60a5fa;--bl-g:rgba(96,165,250,.1);
+--pr:#a78bfa;--pr-g:rgba(167,139,250,.1);
+--cy:#22d3ee;--cy-g:rgba(34,211,238,.1);
+--yl:#fbbf24;--yl-g:rgba(251,191,36,.1);
+--t1:#f0f2f5;--t2:#94a3b8;--t3:#475569;
+--brd:rgba(255,255,255,.06);--brd2:rgba(255,107,43,.25);
+--rad:16px;--rad2:12px;--rad3:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:2px}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;height:56px;background:rgba(12,16,24,.92);border-bottom:1px solid var(--brd2);display:flex;align-items:center;padding:0 14px;z-index:100;gap:10px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.hbtn{width:40px;height:40px;border-radius:var(--rad3);border:none;background:var(--or);color:#fff;font-size:1.2em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0}
+.hbtn:active{transform:scale(.9)}.hbtn.x{background:var(--rd)}
+.htitle{flex:1;overflow:hidden}.htitle h1{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--or);white-space:nowrap;letter-spacing:-.02em}.htitle span{font-size:.65em;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.hbadge{background:var(--bg3);border:1px solid var(--brd);padding:3px 8px;border-radius:16px;font-family:'JetBrains Mono',monospace;font-size:.7em;color:var(--t2);white-space:nowrap}
+.hbadge b{color:var(--or)}
+
+/* NAV */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:98;opacity:0;pointer-events:none;transition:.3s}.overlay.on{opacity:1;pointer-events:auto}
+nav{position:fixed;top:56px;left:0;width:260px;height:calc(100vh - 56px);background:var(--bg2);border-right:1px solid var(--brd);z-index:99;transform:translateX(-100%);transition:.3s;overflow-y:auto;padding:10px}
+nav.on{transform:translateX(0)}
+.nlbl{font-size:.58em;color:var(--t3);text-transform:uppercase;letter-spacing:.15em;margin:12px 0 5px 10px;font-weight:700}
+.nbtn{display:block;width:100%;padding:10px 12px;background:transparent;border:1px solid transparent;border-radius:var(--rad3);color:var(--t2);font-size:.85em;font-weight:600;text-align:left;cursor:pointer;transition:.2s;margin-bottom:2px;font-family:'Outfit',sans-serif}
+.nbtn:hover{background:var(--or-g);border-color:var(--brd2);color:var(--t1)}
+.nbtn.on{background:linear-gradient(135deg,var(--or),var(--or2));color:#fff;border-color:transparent}
+.nbtn span{margin-right:6px}
+
+/* MAIN */
+main{padding:72px 14px 40px;max-width:880px;margin:0 auto}
+.sec{display:none;animation:fi .25s ease}.sec.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.c{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--rad);padding:16px;margin-bottom:14px}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--brd)}.ch h2{font-size:1em;font-weight:700;color:var(--or);flex:1}.ch .ico{width:32px;height:32px;background:var(--or-g);border-radius:var(--rad3);display:flex;align-items:center;justify-content:center;font-size:1em;flex-shrink:0}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:700px){.g2{grid-template-columns:1fr}}
+@media(max-width:500px){.g3{grid-template-columns:repeat(2,1fr)}.g4{grid-template-columns:repeat(2,1fr)}}
+
+/* STAT BOXES */
+.sb{background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad2);padding:12px 8px;text-align:center}
+.sv{font-size:1.5em;font-weight:800;color:var(--or);font-family:'JetBrains Mono',monospace}
+.sl{font-size:.6em;color:var(--t3);text-transform:uppercase;margin-top:2px;font-weight:600}
+.sb.gr .sv{color:var(--gr)}.sb.bl .sv{color:var(--bl)}.sb.cy .sv{color:var(--cy)}.sb.rd .sv{color:var(--rd)}.sb.yl .sv{color:var(--yl)}.sb.pr .sv{color:var(--pr)}
+
+/* MACRO GRID */
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mb{background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad2);padding:10px 4px;text-align:center}
+.mb .v{font-size:1.3em;font-weight:800;font-family:'JetBrains Mono',monospace}
+.mb .l{font-size:.58em;color:var(--t3);text-transform:uppercase;margin-top:1px}
+.mb.kc .v{color:#fca5a5}.mb.pr .v{color:#93c5fd}.mb.ca .v{color:#fde047}.mb.fa .v{color:#c4b5fd}
+@media(max-width:500px){.mg{grid-template-columns:repeat(2,1fr)}}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.68em;font-weight:700;font-family:'JetBrains Mono',monospace}
+.badge.std{background:var(--bg4);color:var(--t2)}.badge.ref{background:var(--gr-g);color:var(--gr)}.badge.psm{background:var(--rd-g);color:var(--rd)}.badge.org{background:var(--pr-g);color:var(--pr)}
+
+/* PROGRESS RING */
+.pring{position:relative;width:160px;height:160px;margin:0 auto}
+.pring svg{transform:rotate(-90deg);filter:drop-shadow(0 0 10px rgba(255,107,43,.3))}
+.pring circle{fill:none;stroke-width:10;stroke-linecap:round}
+.pring .trk{stroke:var(--bg4)}.pring .fil{stroke:url(#og);transition:stroke-dashoffset .8s ease}
+.pctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pctr .kg{font-size:2em;font-weight:800;font-family:'JetBrains Mono',monospace}
+.pctr .lb{font-size:.75em;color:var(--t3)}
+.pctr .tgt{margin-top:3px;padding:2px 8px;background:var(--or);border-radius:10px;font-size:.6em;font-weight:700}
+
+/* WEEK SELECTOR */
+.wsel{display:flex;gap:6px;margin-bottom:12px}
+.wsel .ws{flex:1;padding:8px;background:var(--bg4);border:2px solid var(--brd);border-radius:var(--rad3);color:var(--t2);font-weight:700;font-size:.8em;cursor:pointer;transition:.2s;text-align:center;font-family:'Outfit',sans-serif}
+.wsel .ws:hover{border-color:var(--or)}.wsel .ws.on{background:var(--or);color:#fff;border-color:var(--or)}
+
+/* TABS / DAY SELECTOR */
+.tabs{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:8px 14px;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad3);color:var(--t2);font-weight:600;font-size:.82em;cursor:pointer;transition:.2s;font-family:'Outfit',sans-serif}
+.tab:hover{border-color:var(--or)}.tab.on{background:var(--or);color:#fff;border-color:var(--or)}
+.tab.ref{border-color:var(--gr)}.tab.ref.on{background:var(--gr);color:#000}
+.tab.psm{border-color:var(--rd)}.tab.psm.on{background:var(--rd)}
+.tab.org{border-color:var(--pr)}.tab.org.on{background:var(--pr)}
+
+/* MEAL CARDS */
+.mc{background:var(--bg4);border:1px solid var(--brd);border-left:4px solid var(--or);border-radius:var(--rad2);padding:12px;margin-bottom:8px}
+.mc.ref{border-left-color:var(--gr)}.mc.psm{border-left-color:var(--rd)}.mc.org{border-left-color:var(--pr)}
+.mc .mt{font-size:.72em;color:var(--or2);font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:2px}
+.mc .mn{font-weight:700;font-size:.92em;margin-bottom:5px}
+.mc .mm{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.mc .mi{font-size:.8em;color:var(--t2);line-height:1.7}
+.mc .mi strong{color:var(--t1)}
+.mbdg{display:inline-block;padding:1px 7px;border-radius:10px;font-size:.68em;font-weight:600;font-family:'JetBrains Mono',monospace}
+.mbdg.kc{background:rgba(239,68,68,.12);color:#fca5a5}.mbdg.bp{background:rgba(59,130,246,.12);color:#93c5fd}
+.mbdg.wg{background:rgba(234,179,8,.12);color:#fde047}.mbdg.tl{background:rgba(168,85,247,.12);color:#c4b5fd}
+
+/* MACRO SUMMARY BAR */
+.msbar{background:linear-gradient(135deg,var(--or),var(--or2));border-radius:var(--rad2);padding:12px;margin-top:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.msbar .i .l{font-size:.58em;opacity:.85;text-transform:uppercase}.msbar .i .v{font-size:1.2em;font-weight:800;font-family:'JetBrains Mono',monospace}
+@media(max-width:500px){.msbar{grid-template-columns:repeat(2,1fr)}}
+
+/* SHOPPING */
+.scat{background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad2);padding:12px;margin-bottom:8px}
+.scat .sh{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--or);cursor:pointer;margin-bottom:8px;font-size:.92em}
+.scat .sh .arr{margin-left:auto;transition:.2s}.scat .sh.col .arr{transform:rotate(-90deg)}
+.sitems{display:block}.sitems.hid{display:none}
+.si{display:grid;grid-template-columns:20px 1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd);font-size:.82em;align-items:center}
+.si:last-child{border-bottom:none}
+.si.chk{opacity:.3}.si.chk .sn{text-decoration:line-through}
+.schk{width:16px;height:16px;border:2px solid var(--brd);border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.schk:hover{border-color:var(--or)}.schk.on{background:var(--gr);border-color:var(--gr)}
+.schk.on::after{content:'✓';color:#fff;font-size:.6em;font-weight:700}
+.sq{color:var(--gr);font-weight:600;text-align:right;font-size:.82em}
+.sp{color:var(--t3);font-family:'JetBrains Mono',monospace;min-width:40px;text-align:right;font-size:.82em}
+.stot{background:linear-gradient(135deg,var(--or),var(--or2));border-radius:var(--rad2);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-weight:700}
+.stot .v{font-size:1.4em;font-weight:800;font-family:'JetBrains Mono',monospace}
+
+/* SUPP PILLS */
+.spblk{background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad2);padding:12px;margin-bottom:8px}
+.spblk .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.spblk .tm{background:var(--or-g);padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.78em;color:var(--or);font-weight:700}
+.spblk .lb{color:var(--t2);font-size:.85em}
+.pills{display:flex;flex-wrap:wrap;gap:5px}
+.pill{padding:4px 10px;background:var(--bg2);border:1px solid var(--brd);border-radius:16px;font-size:.75em;cursor:pointer;transition:.2s}
+.pill:hover{border-color:var(--or)}.pill.tk{background:var(--gr-g);border-color:var(--gr);color:var(--gr)}
+
+/* WATER */
+.wbot{position:relative;width:100px;height:240px;background:var(--bg4);border:3px solid var(--cy);border-radius:8px 8px 24px 24px;overflow:hidden;margin:0 auto 14px}
+.wbot::before{content:'';position:absolute;top:-12px;left:24px;width:50px;height:16px;background:var(--bg4);border:3px solid var(--cy);border-bottom:none;border-radius:4px 4px 0 0}
+.wlvl{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,#22d3ee,#0891b2);transition:.5s}
+.wbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.wbtn{padding:6px 14px;background:var(--bg4);border:2px solid var(--cy);border-radius:18px;color:var(--cy);font-weight:600;cursor:pointer;transition:.2s;font-size:.82em;font-family:'Outfit',sans-serif}
+.wbtn:hover{background:var(--cy);color:var(--bg)}
+.wbtn.min{border-color:var(--rd);color:var(--rd)}.wbtn.min:hover{background:var(--rd);color:#fff}
+
+/* CHART */
+.chrt{background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad2);padding:12px;height:220px}
+
+/* HISTORY */
+.hi{display:flex;align-items:center;padding:7px 0;border-bottom:1px solid var(--brd);font-size:.85em}
+.hi:last-child{border-bottom:none}
+.hi .dt{flex:1;color:var(--t2)}.hi .wt{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--or);margin-right:8px}
+.hi .ch{font-family:'JetBrains Mono',monospace;font-size:.8em;min-width:50px;text-align:right;margin-right:5px}
+.hi .ch.dn{color:var(--gr)}.hi .ch.up{color:var(--rd)}
+.hi .del{background:none;border:none;color:var(--t3);cursor:pointer;opacity:0;transition:.2s;font-size:.9em}.hi:hover .del{opacity:1}
+
+/* ALERTS */
+.al{padding:10px 12px;border-radius:var(--rad2);margin:8px 0;font-size:.85em}
+.al.info{background:var(--bl-g);border-left:4px solid var(--bl)}
+.al.ok{background:var(--gr-g);border-left:4px solid var(--gr)}
+.al.warn{background:var(--yl-g);border-left:4px solid var(--yl)}
+.al.err{background:var(--rd-g);border-left:4px solid var(--rd)}
+.al.cyn{background:var(--cy-g);border-left:4px solid var(--cy)}
+
+/* BUTTONS */
+.btn{padding:8px 16px;background:var(--or);border:none;border-radius:var(--rad3);color:#fff;font-family:'Outfit',sans-serif;font-weight:600;cursor:pointer;transition:.2s;font-size:.85em}
+.btn:hover{filter:brightness(1.15)}.btn:active{transform:scale(.97)}
+.btn.out{background:transparent;border:1px solid var(--brd);color:var(--t2)}.btn.out:hover{border-color:var(--or);color:var(--t1)}
+.btn.sm{padding:5px 10px;font-size:.78em}.btn.gr{background:var(--gr)}.btn.rd{background:var(--rd)}.btn.cy{background:var(--cy);color:var(--bg)}
+
+/* INPUTS */
+.ig{margin-bottom:10px}.ig label{display:block;margin-bottom:3px;color:var(--t3);font-size:.78em;font-weight:600}
+.ig input,.ig select{width:100%;padding:8px;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad3);color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:.85em}
+.ig input:focus,.ig select:focus{outline:none;border-color:var(--or)}
+.fr{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}.fr .ig{flex:1;min-width:100px;margin-bottom:0}
+
+/* TOAST */
+.toast{position:fixed;bottom:16px;right:16px;padding:8px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:var(--rad2);box-shadow:0 4px 16px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px;transform:translateY(80px);opacity:0;transition:.3s;z-index:200;font-size:.85em}
+.toast.on{transform:translateY(0);opacity:1}.toast.ok{border-left:4px solid var(--gr)}.toast.er{border-left:4px solid var(--rd)}
+
+/* TIMER */
+.tdisp{font-family:'JetBrains Mono',monospace;font-size:4em;font-weight:700;color:var(--or);text-shadow:0 0 25px rgba(255,107,43,.35);text-align:center;margin:16px 0}
+.tpreset{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:14px}
+.tpb{padding:6px 12px;background:var(--bg4);border:1px solid var(--brd);border-radius:16px;color:var(--t2);font-size:.78em;cursor:pointer;transition:.2s;font-family:'Outfit',sans-serif}
+.tpb:hover{border-color:var(--or);color:var(--t1)}
+
+/* QUICK ACTIONS */
+.qa{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad2);margin-bottom:5px;cursor:pointer;transition:.2s}
+.qa:hover{background:var(--bg5);transform:translateX(2px);border-color:var(--brd2)}
+.qa .i{font-size:1.1em}.qa .t{flex:1}.qa .tt{font-weight:600;font-size:.88em}.qa .ds{font-size:.68em;color:var(--t3)}.qa .ar{color:var(--t3)}
+
+/* BLOOD RESULTS TABLE */
+.brt{width:100%;border-collapse:collapse;font-size:.8em;margin:6px 0}
+.brt th,.brt td{padding:7px 6px;text-align:left;border-bottom:1px solid var(--brd)}
+.brt th{color:var(--or);font-weight:700;background:var(--bg4);font-size:.85em}
+.brt td{color:var(--t2)}
+.brt .ok-val{color:var(--gr)}.brt .warn-val{color:var(--yl)}.brt .bad-val{color:var(--rd)}
+
+/* MEAL PREP */
+.mp-day{background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad2);padding:12px;margin-bottom:8px}
+.mp-day .mp-h{font-weight:700;color:var(--or);font-size:.9em;margin-bottom:6px}
+.mp-day .mp-i{font-size:.82em;color:var(--t2);padding:3px 0;border-bottom:1px solid var(--brd)}
+.mp-day .mp-i:last-child{border-bottom:none}
+
+/* TABLE generic */
+table.gen{width:100%;border-collapse:collapse;font-size:.8em;margin:6px 0}
+table.gen th,table.gen td{padding:7px 6px;text-align:left;border-bottom:1px solid var(--brd)}
+table.gen th{color:var(--or);font-weight:700;background:var(--bg4)}
+table.gen td{color:var(--t2)}
+
+
+/* MEAL CHECKBOX */
+.mchk-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:6px;border-top:1px solid var(--brd)}
+.mchk-btn{padding:4px 12px;border-radius:16px;font-size:.75em;font-weight:600;cursor:pointer;transition:.2s;border:1px solid var(--brd);background:var(--bg3);color:var(--t2);font-family:'Outfit',sans-serif}
+.mchk-btn:hover{border-color:var(--gr);color:var(--gr)}
+.mchk-btn.done{background:var(--gr-g);border-color:var(--gr);color:var(--gr)}
+.mchk-lbl{font-size:.72em;color:var(--t3)}
+
+/* COMPLIANCE BAR */
+.cbar{display:flex;gap:3px;align-items:flex-end;height:50px;margin-top:10px}
+.cbar-d{flex:1;border-radius:3px 3px 0 0;transition:.3s;min-width:0;position:relative}
+.cbar-d .cbar-v{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:.55em;color:var(--t3);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.cbar-lbl{display:flex;gap:3px;margin-top:2px}.cbar-lbl span{flex:1;text-align:center;font-size:.55em;color:var(--t3)}
+
+/* SCALE TOGGLE */
+.scale-wrap{display:flex;gap:5px;align-items:center;margin-top:6px}
+.scale-btn{padding:3px 10px;border-radius:12px;font-size:.72em;font-weight:700;cursor:pointer;transition:.2s;border:1px solid var(--brd);background:var(--bg3);color:var(--t2);font-family:'JetBrains Mono',monospace}
+.scale-btn:hover{border-color:var(--yl)}
+.scale-btn.on{background:var(--yl-g);border-color:var(--yl);color:var(--yl)}
+
+/* AUTO WEEK INDICATOR */
+.aw-bar{background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad3);padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:.82em}
+.aw-bar .aw-wk{font-weight:800;color:var(--or);font-family:'JetBrains Mono',monospace}
+.aw-bar .aw-day{color:var(--t2)}
+.aw-set{font-size:.72em;color:var(--or);cursor:pointer;margin-left:auto;text-decoration:underline}
+
+/* NOTIF BANNER */
+.notif-bar{background:var(--yl-g);border:1px solid rgba(251,191,36,.3);border-radius:var(--rad3);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:.82em}
+.notif-bar button{padding:5px 12px;border-radius:16px;border:none;font-weight:600;cursor:pointer;font-size:.8em;font-family:'Outfit',sans-serif}
+.notif-bar .nb-yes{background:var(--or);color:#fff}.notif-bar .nb-no{background:var(--bg4);color:var(--t2)}
+
+/* PWA install */
+.pwa-bar{background:var(--or-g);border:1px solid var(--brd2);border-radius:var(--rad3);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:.82em;display:none}
+.pwa-bar button{padding:5px 12px;border-radius:16px;border:none;background:var(--or);color:#fff;font-weight:600;cursor:pointer;font-size:.8em}
+
+@media(max-width:600px){
+main{padding:64px 8px 28px}.hbadge{display:none}header{padding:0 8px;gap:6px}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0"><defs><linearGradient id="og" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ff6b2b"/><stop offset="100%" stop-color="#ff8f5e"/></linearGradient></defs></svg>
+<div class="toast" id="toast"><span id="tIco"></span><span id="tMsg"></span></div>
+<div class="overlay" id="ov" onclick="navC()"></div>
+<header>
+<button class="hbtn" id="mbtn" onclick="navT()">☰</button>
+<div class="htitle"><h1>DIET MASTER V7</h1><span>~303 zł/tyg • T<span id="hWk">1</span></span></div>
+<div class="hbadge">💧 <b id="hw">0</b>L</div>
+<div class="hbadge">⚖️ <b id="hwt">100.0</b>kg</div>
+</header>
+<nav id="nav">
+<div class="nlbl">Główne</div>
+<button class="nbtn on" data-s="dash"><span>📊</span> Dashboard</button>
+<button class="nbtn" data-s="plan"><span>🍽️</span> Jadłospis</button>
+<button class="nbtn" data-s="shop"><span>🛒</span> Zakupy</button>
+<button class="nbtn" data-s="waga"><span>⚖️</span> Waga</button>
+<div class="nlbl">Narzędzia</div>
+<button class="nbtn" data-s="woda"><span>💧</span> Nawodnienie</button>
+<button class="nbtn" data-s="supp"><span>💊</span> Suplementy</button>
+<button class="nbtn" data-s="psmf"><span>⚡</span> Protokół PSMF</button>
+<button class="nbtn" data-s="prep"><span>🍳</span> Meal Prep</button>
+<button class="nbtn" data-s="timer"><span>⏱️</span> Timer</button>
+<div class="nlbl">Dane</div>
+<button class="nbtn" data-s="blood"><span>🩸</span> Wyniki Krwi</button>
+<button class="nbtn" data-s="zabka"><span>🏪</span> Plan B — Żabka</button>
+</nav>
+<main>
+
+<!-- DASHBOARD -->
+<section id="dash" class="sec on">
+<div id="notifBar" class="notif-bar" style="display:none">
+<span>🔔</span><span>Włącz powiadomienia (elektrolity, posiłki, supl.)</span>
+<button class="nb-yes" onclick="notifReq()">Włącz</button><button class="nb-no" onclick="notifDismiss()">Nie</button>
+</div>
+<div id="pwaBar" class="pwa-bar">
+<span>📱</span><span>Zainstaluj jako aplikację na telefonie</span>
+<button onclick="pwaInstall()">Instaluj</button><button class="nb-no" onclick="this.parentElement.style.display='none'">×</button>
+</div>
+<div class="aw-bar" id="awBar">
+<span class="aw-wk" id="awWk">T1</span>
+<span class="aw-day" id="awDay">PON • Dzień 1</span>
+<span class="aw-set" id="awSet" onclick="awConfig()">⚙️ Ustaw start</span>
+</div>
+<div class="g2">
+<div class="c"><div class="ch"><div class="ico">🎯</div><h2>Postęp</h2></div>
+<div style="text-align:center">
+<div class="pring"><svg width="160" height="160"><circle class="trk" cx="80" cy="80" r="70"/><circle class="fil" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="440" id="pRing"/></svg><div class="pctr"><div class="kg" id="cWt">100.0</div><div class="lb">kg</div><div class="tgt">CEL: 82 KG</div></div></div>
+<div class="g2" style="margin-top:12px"><div class="sb gr"><div class="sv" id="lostK">0.0</div><div class="sl">kg stracone</div></div><div class="sb"><div class="sv" id="leftK">18.0</div><div class="sl">kg do celu</div></div></div>
+</div></div>
+<div class="c"><div class="ch"><div class="ico">📈</div><h2>Dzisiejsze makra</h2><span class="badge std" id="dayBdg">STANDARD</span></div>
+<div class="mg"><div class="mb kc"><div class="v" id="dKc">—</div><div class="l">Kalorie</div></div><div class="mb pr"><div class="v" id="dP">—</div><div class="l">Białko</div></div><div class="mb ca"><div class="v" id="dW">—</div><div class="l">Węgle</div></div><div class="mb fa"><div class="v" id="dT">—</div><div class="l">Tłuszcz</div></div></div>
+<div class="g2" style="margin-top:12px"><div class="sb cy"><div class="sv" id="dWat">0.0</div><div class="sl">💧 woda (L)</div></div><div class="sb bl"><div class="sv" id="dStr">0</div><div class="sl">🍽️ posiłki dziś</div></div></div>
+</div></div>
+<div class="g2" style="margin-top:12px">
+<div class="c"><div class="ch"><div class="ico">📋</div><h2>Plan na dziś</h2><span style="color:var(--t3);font-size:.78em" id="todD"></span></div><div id="todM"></div></div>
+<div class="c"><div class="ch"><div class="ico">⚡</div><h2>Szybkie akcje</h2></div>
+<div class="qa" onclick="go('woda')"><span class="i">💧</span><div class="t"><div class="tt">Dodaj wodę</div><div class="ds">Cel: 5L+</div></div><span class="ar">→</span></div>
+<div class="qa" onclick="go('waga')"><span class="i">⚖️</span><div class="t"><div class="tt">Zapisz wagę</div><div class="ds">Codziennie rano</div></div><span class="ar">→</span></div>
+<div class="qa" onclick="go('prep')"><span class="i">🍳</span><div class="t"><div class="tt">Meal Prep</div><div class="ds">Co gotować dziś</div></div><span class="ar">→</span></div>
+<div class="qa" onclick="go('supp')"><span class="i">💊</span><div class="t"><div class="tt">Suplementy</div><div class="ds">Odznacz wzięte</div></div><span class="ar">→</span></div>
+</div></div>
+<div class="c" style="grid-column:1/-1"><div class="ch"><div class="ico">✅</div><h2>Compliance</h2><span style="font-size:.78em;color:var(--t3)" id="compPct">—</span></div>
+<div class="cbar" id="compBar"></div>
+<div class="cbar-lbl" id="compLbl"></div>
+</div>
+</section>
+
+<!-- JADŁOSPIS -->
+<section id="plan" class="sec">
+<div class="c"><div class="ch"><div class="ico">🍽️</div><h2>Jadłospis V7</h2></div>
+<div class="al info"><strong>💡 4-tygodniowa rotacja.</strong> Wybierz tydzień → dzień → pełny plan z przepisami.</div>
+<div class="scale-wrap"><span style="font-size:.78em;color:var(--t3)">🍳 Porcja:</span><button class="scale-btn" id="sc1" onclick="setScale(1)">×1</button><button class="scale-btn" id="sc2" onclick="setScale(2)">×2</button><button class="scale-btn" id="sc3" onclick="setScale(3)">×3</button></div>
+<div class="al ok"><strong>🌱 Chia 10g/dzień</strong> w shake = +5g błonnika. <strong>Glicyna 5g</strong> w MSM shot 21:00 = stawy + sen. <strong>Omega-3 4 kaps</strong> = ~2g EPA+DHA → triglicerydy w dół.</div>
+<div class="wsel" id="weekSel"></div>
+<div class="tabs" id="dayTabs"></div>
+<div id="dayC"></div>
+</div></section>
+
+<!-- ZAKUPY -->
+<section id="shop" class="sec">
+<div class="c"><div class="ch"><div class="ico">🛒</div><h2>Lista Zakupów — <span id="shopWkLbl">Tydzień 1</span></h2><button class="btn sm out" onclick="shopRst()">🔄 Reset</button></div>
+<div class="wsel" id="shopWeekSel"></div>
+<div id="shopC"></div>
+<div class="stot"><span>RAZEM:</span><span class="v" id="shopTot">— zł</span></div>
+</div></section>
+
+<!-- WAGA -->
+<section id="waga" class="sec">
+<div class="c"><div class="ch"><div class="ico">⚖️</div><h2>Tracker Wagi</h2></div>
+<div class="fr" style="margin-bottom:14px"><div class="ig"><label>Waga (kg)</label><input type="number" id="wIn" step="0.1" min="50" max="200" placeholder="np. 98.5"></div><div class="ig"><label>Data</label><input type="date" id="dIn"></div><button class="btn" onclick="addW()" style="height:38px">💾</button></div>
+<div class="chrt"><canvas id="wChart"></canvas></div>
+<div class="g4" style="margin-top:12px"><div class="sb gr"><div class="sv" id="sStr">-</div><div class="sl">Start</div></div><div class="sb yl"><div class="sv" id="sLow">-</div><div class="sl">Min</div></div><div class="sb bl"><div class="sv" id="sAvg">-</div><div class="sl">kg/tyg</div></div><div class="sb cy"><div class="sv" id="sDays">-</div><div class="sl">Dni do celu</div></div></div>
+<div style="margin-top:14px;max-height:240px;overflow-y:auto" id="wHist"></div>
+</div></section>
+
+<!-- WODA -->
+<section id="woda" class="sec">
+<div class="c"><div class="ch"><div class="ico">💧</div><h2>Nawodnienie</h2><button class="btn sm out" onclick="watRst()">🔄</button></div>
+<div style="text-align:center;padding:14px 0">
+<div class="wbot"><div class="wlvl" id="wLvl" style="height:0%"></div></div>
+<div style="font-size:2em;font-weight:800;color:var(--cy);font-family:'JetBrains Mono',monospace"><span id="wCur">0</span> ml</div>
+<div style="color:var(--t3);margin:3px 0 14px">Cel: <strong>5000 ml</strong> (<span id="wPct">0</span>%)</div>
+<div class="wbtns"><button class="wbtn" onclick="watA(250)">+250</button><button class="wbtn" onclick="watA(500)">+500</button><button class="wbtn" onclick="watA(750)">+750</button><button class="wbtn" onclick="watA(1000)">+1L</button><button class="wbtn min" onclick="watA(-250)">-250</button></div>
+</div>
+<div class="al cyn" style="margin-top:14px"><strong>💧 Harmonogram:</strong><br>• 04:00 — Z shake (200ml)<br>• 06:00-15:00 — Min 3L w pracy (yerba wliczona, ostatnia o 13:00)<br>• 10:00 — Elektrolity 500ml (SHAKER!)<br>• 16:00 — Przed/w trakcie posiłku<br>• 21:00 — MSM + Glicyna 5g shot 300ml<br>• Cel dzienny: 5L+<br>• 💡 Banan (80g) codziennie w shake = potas na uzupełnienie elektrolitów</div>
+</div></section>
+
+<!-- SUPLEMENTY -->
+<section id="supp" class="sec">
+<div class="c"><div class="ch"><div class="ico">💊</div><h2>Suplementacja</h2><button class="btn sm out" onclick="suppRst()">🔄</button></div>
+<div class="al warn"><strong>⚠️ 23 lata:</strong> Bez DHEA, Fadogia, TESTOXX. Naturalny testo na szczycie!</div>
+<div id="suppC"></div>
+<div class="al info" style="margin-top:12px"><strong>💡 Cykluj Ginseng:</strong> 4 tyg ON / 1 tyg OFF.</div>
+</div></section>
+
+<!-- PSMF -->
+<section id="psmf" class="sec">
+<div class="c"><div class="ch"><div class="ico">⚡</div><h2>PSMF — Sobota</h2></div>
+<div class="al err"><strong>⚡ TRUE PSMF:</strong> ~1160 kcal | ~225g białka | ~7g tłuszczu</div>
+<table class="gen">
+<tr><th>Czas</th><th>Co</th><th>Kcal</th><th>B</th></tr>
+<tr><td style="color:var(--or)">04:00</td><td>Shake PSMF (400g twaróg · woda · 6 białek · 10g chia)</td><td>484</td><td>92g</td></tr>
+<tr><td style="color:var(--or)">10:00</td><td>Elektrolity SHOT + PSMF Survival Drink</td><td>5</td><td>0g</td></tr>
+<tr><td style="color:var(--or)">16:00</td><td>400g pierś GOTOWANA + 300g ogórek + 100g sałata</td><td>507</td><td>90g</td></tr>
+<tr><td style="color:var(--or)">19:00</td><td>150g twaróg + 4 białka gotowane [opcjonalny]</td><td>193</td><td>40g</td></tr>
+<tr style="font-weight:700"><td></td><td>SUMA</td><td style="color:var(--rd)">1160</td><td style="color:var(--bl)">225g</td></tr>
+</table>
+<div class="al warn" style="margin-top:12px"><strong>⚠️ KIEDY PRZERWAĆ:</strong><br>• Zawroty głowy po elektrolitach → zjedz normalny posiłek<br>• Trzęsienie rąk → dodaj banan<br>• 3 soboty z rzędu źle → lekki dzień 1400 kcal</div>
+<h3 style="color:var(--or);margin:16px 0 8px;font-size:.95em">📋 Checklist PSMF</h3>
+<div id="psmfChk"></div>
+</div></section>
+
+<!-- MEAL PREP -->
+<section id="prep" class="sec">
+<div class="c"><div class="ch"><div class="ico">🍳</div><h2>Meal Prep — <span id="prepWkLbl">Tydzień 1</span></h2></div>
+<div class="wsel" id="prepWeekSel"></div>
+<div class="al info"><strong>Strategia:</strong> Gotuj na 2 dni do przodu. Blender wieczorem, rano 5 sek. wstrząśnięcie.</div>
+<div id="prepC"></div>
+</div></section>
+
+<!-- TIMER -->
+<section id="timer" class="sec">
+<div class="c"><div class="ch"><div class="ico">⏱️</div><h2>Timer</h2></div>
+<div style="text-align:center;padding:16px 0">
+<div class="tdisp" id="tmDisp">00:00</div>
+<div style="color:var(--t3);margin-bottom:14px" id="tmLbl">Wybierz preset</div>
+<div style="display:flex;justify-content:center;gap:8px"><button class="btn" id="tmBtn" onclick="tmTog()">▶️ Start</button><button class="btn out" onclick="tmRst()">🔄</button></div>
+<div class="tpreset"><button class="tpb" onclick="tmSet(1)">1 min</button><button class="tpb" onclick="tmSet(3)">3 min</button><button class="tpb" onclick="tmSet(5)">5 min</button><button class="tpb" onclick="tmSet(8)">8 min jajka</button><button class="tpb" onclick="tmSet(10)">10 min kasza</button><button class="tpb" onclick="tmSet(12)">12 min ryż</button><button class="tpb" onclick="tmSet(15)">15 min jaglana</button><button class="tpb" onclick="tmSet(20)">20 min kurczak</button><button class="tpb" onclick="tmSet(40)">40 min żołądki</button></div>
+</div></div></section>
+
+<!-- BLOOD RESULTS -->
+<section id="blood" class="sec">
+<div class="c"><div class="ch"><div class="ico">🩸</div><h2>Wyniki Krwi — 09.09.2025</h2></div>
+<div class="al ok"><strong>✅ Ogólnie dobry stan zdrowia.</strong> Nerki OK dla high-protein. Wątroba idealna. Tarczyca OK.</div>
+<div class="al warn"><strong>⚠️ Triglicerydy: 139 mg/dl</strong> (cel: <100). Podwyższone — dieta + Omega-3 + redukcja masy powinny obniżyć.<br><strong>⚠️ HDL: 47 mg/dl</strong> (lepiej >50). Aktywność fizyczna + Omega-3 podniesie.</div>
+
+<h3 style="color:var(--or);margin:14px 0 6px;font-size:.9em">Morfologia</h3>
+<table class="brt">
+<tr><th>Badanie</th><th>Wynik</th><th>Norma</th><th>Status</th></tr>
+<tr><td>Leukocyty</td><td>6,98 tys/μl</td><td>4,00-10,00</td><td class="ok-val">✅</td></tr>
+<tr><td>Erytrocyty</td><td>5,29 mln/μl</td><td>4,60-6,50</td><td class="ok-val">✅</td></tr>
+<tr><td>Hemoglobina</td><td>16,7 g/dl</td><td>13,5-18,0</td><td class="ok-val">✅</td></tr>
+<tr><td>Hematokryt</td><td>50,7 %</td><td>40,0-52,0</td><td class="ok-val">✅</td></tr>
+<tr><td>MCV</td><td>95,8 fl</td><td>80,0-98,0</td><td class="ok-val">✅</td></tr>
+<tr><td>Płytki krwi</td><td>232 tys/μl</td><td>150-400</td><td class="ok-val">✅</td></tr>
+</table>
+
+<h3 style="color:var(--or);margin:14px 0 6px;font-size:.9em">Biochemia</h3>
+<table class="brt">
+<tr><th>Badanie</th><th>Wynik</th><th>Norma</th><th>Status</th></tr>
+<tr><td>Kreatynina</td><td>0,72 mg/dl</td><td>0,70-1,20</td><td class="ok-val">✅ nerki OK</td></tr>
+<tr><td>eGFR</td><td>>60 ml/min</td><td>>60</td><td class="ok-val">✅</td></tr>
+<tr><td>Glukoza</td><td>87 mg/dl</td><td>70-99</td><td class="ok-val">✅</td></tr>
+<tr><td>ALT</td><td>21 U/l</td><td>0-50</td><td class="ok-val">✅ wątroba OK</td></tr>
+<tr><td>AST</td><td>21 U/l</td><td>0-50</td><td class="ok-val">✅</td></tr>
+<tr><td>GGTP</td><td>18 U/l</td><td>0-60</td><td class="ok-val">✅</td></tr>
+<tr><td>Amylaza</td><td>32 U/l</td><td>28-100</td><td class="ok-val">✅</td></tr>
+<tr><td>Sód</td><td>143 mmol/l</td><td>136-145</td><td class="ok-val">✅</td></tr>
+<tr><td>Potas</td><td>3,73 mmol/l</td><td>3,50-5,10</td><td class="ok-val">✅</td></tr>
+<tr><td>TSH</td><td>1,560 μIU/ml</td><td>0,270-4,200</td><td class="ok-val">✅ tarczyca OK</td></tr>
+<tr><td>Wit. B12</td><td>413 pg/ml</td><td>197-771</td><td class="ok-val">✅</td></tr>
+<tr><td>PSA</td><td>0,371 ng/ml</td><td>0-1,400</td><td class="ok-val">✅</td></tr>
+</table>
+
+<h3 style="color:var(--or);margin:14px 0 6px;font-size:.9em">Lipidogram ⚠️</h3>
+<table class="brt">
+<tr><th>Badanie</th><th>Wynik</th><th>Zalecane</th><th>Status</th></tr>
+<tr><td>Cholesterol</td><td>183 mg/dl</td><td>115-190</td><td class="ok-val">✅</td></tr>
+<tr><td>HDL</td><td>47 mg/dl</td><td>>50</td><td class="warn-val">⚠️ niski</td></tr>
+<tr><td>nie-HDL</td><td>136 mg/dl</td><td><130</td><td class="warn-val">⚠️</td></tr>
+<tr><td>LDL</td><td>111 mg/dl</td><td><115</td><td class="warn-val">⚠️ graniczny</td></tr>
+<tr><td>Triglicerydy</td><td>139 mg/dl</td><td><100</td><td class="bad-val">❌ za wysoko</td></tr>
+</table>
+
+<div class="al info" style="margin-top:14px"><strong>📋 Co z tym robić:</strong><br>
+• Redukcja masy (100→82kg) obniży TG i LDL<br>
+• Omega-3 (2 kaps/dz) — bierzesz, kontynuuj<br>
+• Siłownia (start w ciągu miesiąca) podniesie HDL<br>
+• Kontrolne badania: po osiągnięciu ~90kg (ok. 10 tyg)</div>
+</div></section>
+
+<!-- PLAN B ŻABKA -->
+<section id="zabka" class="sec">
+<div class="c"><div class="ch"><div class="ico">🏪</div><h2>Plan B — Żabka / Awaryjny</h2></div>
+<div class="al warn"><strong>⚠️ Użyj TYLKO gdy nie możesz gotować.</strong> Nie zastępuje normalnego planu.</div>
+<h3 style="color:var(--or);margin:14px 0 8px;font-size:.9em">Opcja 1: ~700 kcal | ~80g białka</h3>
+<div class="mc"><div class="mn">Pierś z kurczaka gotowana (Żabka/Freshmarket)</div>
+<div class="mi">• Pierś z kurczaka w plastrach (~150g) — ~25g B<br>• Twaróg 0% Pilos 250g — ~42g B<br>• Ogórek/pomidor — ~20 kcal<br>Razem: ~500 kcal | ~67g B</div></div>
+<h3 style="color:var(--or);margin:14px 0 8px;font-size:.9em">Opcja 2: ~600 kcal | ~70g białka</h3>
+<div class="mc"><div class="mn">Jajka na twardo + twaróg (stacja benzynowa)</div>
+<div class="mi">• 4 jajka gotowane (kup + ugotuj w pracy w czajniku) — ~25g B<br>• Twaróg 0% 250g — ~42g B<br>Razem: ~500 kcal | ~67g B</div></div>
+<h3 style="color:var(--or);margin:14px 0 8px;font-size:.9em">Opcja 3: Fast track Biedronka</h3>
+<div class="mc"><div class="mn">Gotowe danie + twaróg</div>
+<div class="mi">• Pierś grillowana z lady (Biedronka deli) ~200g — ~44g B<br>• Twaróg 0% 250g — ~42g B<br>• Sałata w torebce — ~20 kcal<br>Razem: ~580 kcal | ~86g B</div></div>
+<div class="al info" style="margin-top:12px"><strong>Zasada:</strong> Gdy nie możesz gotować → twaróg 0% + najbardziej czyste białko jakie znajdziesz. Unikaj gotowych sosów, panierki, fast-foodu.</div>
+</div></section>
+
+<!-- AUTO-WEEK CONFIG -->
+<div id="awModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:150;display:none;align-items:center;justify-content:center">
+<div class="c" style="max-width:340px;margin:20px">
+<div class="ch"><div class="ico">📅</div><h2>Data startu diety</h2></div>
+<div class="ig"><label>Kiedy zacząłeś dietę?</label><input type="date" id="awDate"></div>
+<div style="display:flex;gap:8px;margin-top:10px">
+<button class="btn" onclick="awSave()">💾 Zapisz</button>
+<button class="btn out" onclick="awClose()">Anuluj</button>
+<button class="btn rd" onclick="awClear()">Reset</button>
+</div>
+<div class="al info" style="margin-top:10px"><strong>Auto-rotacja:</strong> T1→T2→T3→T4→T1 co poniedziałek od daty startu.</div>
+</div></div>
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// 4-WEEK MEAL DATA (from verified calculations)
+// ═══════════════════════════════════════════════════════
+
+const WEEKS=[
+// ─── TYDZIEŃ 1 ───
+[
+{n:'PON',cls:'',bdg:'std',bdgT:'STANDARD A',kcal:2089,b:272,w:167,t:29,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,
+ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity Shot',cls:'',kcal:5,b:0,w:1,t:0,
+ing:'500ml wody + ½ łyż. soli himalajskiej + sok ½ cytryny',recipe:'W shakerze z domu. Wypij w 10 min.'},
+{time:'16:00',name:'🍗 Pierś + Ryż + Brokuły',cls:'',kcal:809,b:99,w:62,t:13,
+ing:'400g pierś surowa · 65g ryż · 250g brokuły mrożone · 5ml olej',
+recipe:'Ryż 12 min w 250ml wody. Pierś w kostkę 3×3cm, smaż 10-12 min na 5ml oleju. Brokuły ostatnie 5 min. Sól, pieprz, papryka.'},
+{time:'19:00',name:'🥚 Jajka gotow. + Twaróg + Kasza Gryczana',cls:'',kcal:632,b:76,w:53,t:12,
+ing:'2 jajka gotowane · 3 białka gotowane · 250g twaróg · 40g kasza gryczana · 200g mix warzywny',
+recipe:'Kasza 10 min. Jajka gotuj 8 min (twarde). Twaróg z boku. Warzywa mikrofala 4 min.'}
+]},
+{n:'WTO',cls:'',bdg:'std',bdgT:'STANDARD B',kcal:2028,b:268,w:157,t:28,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,
+ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity Shot',cls:'',kcal:5,b:0,w:1,t:0,
+ing:'500ml wody + ½ łyż. soli + sok ½ cytryny',recipe:'Shaker z domu.'},
+{time:'16:00',name:'🍗 Pierś + Makaron + Warzywa',cls:'',kcal:782,b:99,w:55,t:13,
+ing:'400g pierś · 60g makaron pełnoziarnisty · 200g mix warzywny · 5ml olej',
+recipe:'Makaron al dente 8-10 min. Kurczak w paski 10 min. Warzywa 4 min. Sos sojowy opcja.'},
+{time:'19:00',name:'🥚 Jajka gotow. + Twaróg + Ziemniaki',cls:'',kcal:598,b:72,w:50,t:11,
+ing:'2 jajka gotowane · 3 białka gotowane · 250g twaróg · 150g ziemniaki · 200g marchewka',
+recipe:'Ziemniaki + marchewka w plastry, gotuj 15 min. Jajka gotowane 8 min. Twaróg z boku.'}
+]},
+{n:'ŚRO',cls:'org',bdg:'org',bdgT:'SERCA 🫀',kcal:2130,b:278,w:128,t:49,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,
+ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity Shot',cls:'',kcal:5,b:0,w:1,t:0,
+ing:'500ml wody + sól + cytryna',recipe:'Shaker.'},
+{time:'16:00',name:'🫀 Serca + Pierś + Jaglana + Szpinak',cls:'org',kcal:946,b:101,w:50,t:34,
+ing:'300g serca kurczaka · 200g pierś · 50g kasza jaglana · 100g cebula · 150g szpinak mrożony',
+recipe:'Kasza jaglana PRZEPŁUCZ, gotuj 15 min. Serca przekrój na pół, gotuj w wodzie 15-20 min (NIE smaż!). Pierś w kostkę osobno. Cebula. Szpinak 3 min.'},
+{time:'19:00',name:'🥚 Jajka(2) + Twaróg (więcej) + Warzywa',cls:'',kcal:536,b:80,w:26,t:11,
+ing:'2 jajka gotowane · 3 białka gotowane · 300g twaróg · 200g mix warzywny',
+recipe:'Jajka 8 min. Twaróg 300g. Warzywa mikrofala.'}
+]},
+{n:'CZW',cls:'',bdg:'std',bdgT:'STANDARD C',kcal:2113,b:276,w:171,t:29,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,
+ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity Shot',cls:'',kcal:5,b:0,w:1,t:0,
+ing:'500ml wody + sól + cytryna',recipe:'Shaker.'},
+{time:'16:00',name:'🍗 Pierś + Ryż + Brokuły',cls:'',kcal:809,b:99,w:62,t:13,
+ing:'400g pierś · 65g ryż · 250g brokuły mrożone · 5ml olej',
+recipe:'Ryż 12 min. Pierś w kostkę. Brokuły 5 min.'},
+{time:'19:00',name:'🥚 Jajka gotow. + Twaróg + Groszek',cls:'',kcal:656,b:80,w:57,t:12,
+ing:'2 jajka gotowane · 3 białka gotowane · 250g twaróg · 35g kasza gryczana · 150g groszek mrożony',
+recipe:'Kasza 10 min. Jajka 8 min. Groszek z mikrofali 3 min. Twaróg.'}
+]},
+{n:'PIĄ',cls:'org',bdg:'org',bdgT:'WĄTRÓBKA 🫀',kcal:1954,b:265,w:128,t:36,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,
+ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity Shot',cls:'',kcal:5,b:0,w:1,t:0,
+ing:'500ml wody + sól + cytryna',recipe:'Shaker.'},
+{time:'16:00',name:'🫀 Wątróbka + Pierś + Jaglana',cls:'org',kcal:770,b:88,w:50,t:21,
+ing:'200g wątróbka drobiowa · 200g pierś · 50g kasza jaglana · 100g cebula · 150g szpinak · 5ml olej',
+recipe:'Kasza 15 min. Wątróbka plastry 1cm — MAX 3-4 min/stronę (nie przesusz!). Pierś osobno. Cebula na oleju. ⚠️ Max 1×/tydzień (wit.A)!'},
+{time:'19:00',name:'🥚 Jajka(2) + Twaróg (więcej) + Warzywa',cls:'',kcal:536,b:80,w:26,t:11,
+ing:'2 jajka gotowane · 3 białka gotowane · 300g twaróg · 200g mix warzywny',
+recipe:'Jajka 8 min. Twaróg 300g. Warzywa mikrofala.'}
+]},
+{n:'SOB',cls:'psm',bdg:'psm',bdgT:'TRUE PSMF ⚡',kcal:1189,b:222,w:40,t:10,
+meals:[
+{time:'04:00',name:'🥤 Shake PSMF + Chia',cls:'psm',kcal:484,b:92,w:21,t:3,
+ing:'400g twaróg · woda · 6 białek · 10g chia · cynamon/kakao',recipe:'Blend wieczorem. Rano wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity (KRYTYCZNE!)',cls:'psm',kcal:5,b:0,w:1,t:0,
+ing:'500ml wody + ½ łyż. soli + cytryna + Survival Drink (1L w ciągu dnia)',
+recipe:'Pij powoli. Bez elektrolitów = bóle głowy!'},
+{time:'16:00',name:'🍗 GOTOWANY kurczak + surowe warzywa',cls:'psm',kcal:507,b:90,w:11,t:7,
+ing:'400g pierś GOTOWANA w wodzie · 300g ogórek · 100g sałata lodowa',
+recipe:'Pierś GOTUJ w wodzie z solą 20 min (NIE smaż! zero oleju!). Ogórek w plastry. Sałata. Cytryna.'},
+{time:'19:00',name:'🧀 Mini-twaróg + białka [opcjonalny]',cls:'psm',kcal:193,b:40,w:7,t:0,
+ing:'150g twaróg · 4 białka gotowane',
+recipe:'+40g białka dla ochrony mięśni.'}
+]},
+{n:'NIE',cls:'ref',bdg:'ref',bdgT:'REFEED 🟢',kcal:2482,b:244,w:270,t:38,
+meals:[
+{time:'04:00',name:'🥤 Shake REFEED + Chia',cls:'ref',kcal:956,b:110,w:108,t:8,
+ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity Shot',cls:'',kcal:5,b:0,w:1,t:0,
+ing:'500ml wody + sól + cytryna',recipe:'Shaker.'},
+{time:'16:00',name:'🍗 DUŻY Kurczak + DUŻY Ryż',cls:'ref',kcal:1045,b:99,w:109,t:18,
+ing:'400g pierś · 120g ryż · 200g mix warzywny · 10ml olej',
+recipe:'Ryż w 500ml wody 18 min — MEGA porcja. Kurczak jak zwykle. Olej podwójny.'},
+{time:'19:00',name:'🥚 Jajka + Makaron',cls:'ref',kcal:476,b:35,w:52,t:12,
+ing:'2 jajka gotowane · 3 białka gotowane · 60g makaron · 150g mix warzywny',
+recipe:'Makaron 8 min. Jajka gotowane. Warzywa.'}
+]}
+],
+// ─── TYDZIEŃ 2 ───
+[
+{n:'PON',cls:'',bdg:'std',bdgT:'KASZA GRYCZANA',kcal:1990,b:268,w:155,t:29,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,
+ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker 500ml',recipe:'Jak zawsze.'},
+{time:'16:00',name:'🍗 Pierś + Kasza Gryczana + Kalafior',cls:'',kcal:744,b:99,w:53,t:14,
+ing:'400g pierś · 55g kasza gryczana · 250g kalafior mrożony · 5ml olej',
+recipe:'Kasza 10 min. Kurczak w kostkę. Kalafior 5 min.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Ziemniaki',cls:'',kcal:598,b:72,w:50,t:11,
+ing:'2 jajka gotowane · 3 białka · 250g twaróg · 150g ziemniaki · 200g marchewka',
+recipe:'Ziemniaki + marchewka 15 min. Jajka 8 min.'}
+]},
+{n:'WTO',cls:'',bdg:'std',bdgT:'TERIYAKI',kcal:2092,b:270,w:171,t:28,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,
+ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker 500ml',recipe:''},
+{time:'16:00',name:'🍗 Kurczak Teriyaki + Ryż',cls:'',kcal:812,b:97,w:66,t:12,
+ing:'400g pierś · 65g ryż · 200g mix warzywny · 15ml sos sojowy · 5ml olej',
+recipe:'Ryż 12 min. Kurczak w paski, smaż 10 min. Polej sosem sojowym na koniec. Warzywa.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Kasza Gryczana',cls:'',kcal:632,b:76,w:53,t:12,
+ing:'2 jajka · 3 białka · 250g twaróg · 40g kasza gryczana · 200g mix warzywny',recipe:'Standard.'}
+]},
+{n:'ŚRO',cls:'org',bdg:'org',bdgT:'SERCA + SZPINAK 🫀',kcal:2130,b:278,w:128,t:49,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker 500ml',recipe:''},
+{time:'16:00',name:'🫀 Serca + Pierś + Jaglana + Szpinak',cls:'org',kcal:946,b:101,w:50,t:34,
+ing:'300g serca · 200g pierś · 50g kasza jaglana · 100g cebula · 150g szpinak mrożony',
+recipe:'Kasza PRZEPŁUCZ 15 min. Serca gotuj w wodzie 15-20 min. Pierś osobno. Szpinak 3 min.'},
+{time:'19:00',name:'🥚 Jajka(2) + Twaróg (więcej)',cls:'',kcal:536,b:80,w:26,t:11,
+ing:'2 jajka · 3 białka · 300g twaróg · 200g mix warzywny',recipe:'Standard.'}
+]},
+{n:'CZW',cls:'',bdg:'std',bdgT:'BULGUR + CUKINIA',kcal:2007,b:270,w:150,t:29,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 Pierś + Bulgur + Cukinia',cls:'',kcal:750,b:98,w:52,t:13,
+ing:'400g pierś · 60g bulgur · 200g cukinia · 100g pomidory · 5ml olej',
+recipe:'Bulgur 12 min. Kurczak w kostkę. Cukinia w plastry. Pomidory pokrój.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Fasolka',cls:'',kcal:609,b:75,w:46,t:12,
+ing:'2 jajka · 3 białka · 250g twaróg · 35g kasza jaglana · 200g fasolka szparagowa',
+recipe:'Kasza 15 min. Jajka 8 min. Fasolka z mikrofali 4 min.'}
+]},
+{n:'PIĄ',cls:'org',bdg:'org',bdgT:'SERCA + GROSZEK 🫀',kcal:2258,b:285,w:154,t:49,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🫀 Serca + Pierś + Jaglana + Groszek',cls:'org',kcal:1074,b:108,w:76,t:34,
+ing:'300g serca · 200g pierś · 50g kasza jaglana · 100g cebula · 200g groszek mrożony',
+recipe:'Kasza PRZEPŁUCZ 15 min. Serca gotuj w wodzie 20 min. Pierś kostkuj. Cebula. Groszek 3 min.'},
+{time:'19:00',name:'🥚 Jajka(2) + Twaróg (więcej)',cls:'',kcal:536,b:80,w:26,t:11,
+ing:'2 jajka · 3 białka · 300g twaróg · 200g mix warzywny',recipe:'Standard.'}
+]},
+{n:'SOB',cls:'psm',bdg:'psm',bdgT:'TRUE PSMF ⚡',kcal:1189,b:222,w:40,t:10,
+meals:[
+{time:'04:00',name:'🥤 Shake PSMF + Chia',cls:'psm',kcal:484,b:92,w:21,t:3,ing:'400g twaróg · woda · 6 białek · 10g chia · cynamon/kakao',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity + Survival',cls:'psm',kcal:5,b:0,w:1,t:0,ing:'Shaker + 1L survival drink',recipe:'Pij powoli.'},
+{time:'16:00',name:'🍗 GOTOWANY kurczak + warzywa',cls:'psm',kcal:507,b:90,w:11,t:7,ing:'400g pierś gotowana · 300g ogórek · 100g sałata',recipe:'Gotuj w wodzie 20 min.'},
+{time:'19:00',name:'🧀 Mini-twaróg [opcja]',cls:'psm',kcal:193,b:40,w:7,t:0,ing:'150g twaróg · 4 białka gotowane',recipe:''}
+]},
+{n:'NIE',cls:'ref',bdg:'ref',bdgT:'REFEED 🟢',kcal:2451,b:240,w:269,t:37,
+meals:[
+{time:'04:00',name:'🥤 Shake REFEED + Chia',cls:'ref',kcal:956,b:110,w:108,t:8,ing:'400g twaróg · 300ml mleko · 6 białek · 120g banan · 50g płatki · 15g miód · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 DUŻY Kurczak + DUŻY Ryż',cls:'ref',kcal:1045,b:99,w:109,t:18,
+ing:'400g pierś · 120g ryż · 200g mix warzywny · 10ml olej',recipe:'MEGA porcja ryżu.'},
+{time:'19:00',name:'🥚 Jajka + Ryż',cls:'ref',kcal:445,b:31,w:51,t:11,
+ing:'2 jajka · 3 białka · 50g ryż · 150g mix warzywny',recipe:'Ryż 12 min. Jajka gotowane.'}
+]}
+],
+// ─── TYDZIEŃ 3 ───
+[
+{n:'PON',cls:'',bdg:'std',bdgT:'WĘGIERSKI',kcal:2093,b:268,w:169,t:32,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 Kurczak Węgierski + Ryż',cls:'',kcal:813,b:95,w:64,t:16,
+ing:'400g pierś · 60g ryż · 100g cebula · 150g pomidory · 30g śmietana 12% · 5ml olej',
+recipe:'Kurczak w kostkę + cebula smaż. Dodaj pomidory pokrojone + śmietanę = sos. Ryż 12 min.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Kasza Gryczana',cls:'',kcal:632,b:76,w:53,t:12,
+ing:'2 jajka · 3 białka · 250g twaróg · 40g kasza gryczana · 200g mix warzywny',recipe:'Standard.'}
+]},
+{n:'WTO',cls:'',bdg:'std',bdgT:'KUSKUS',kcal:2044,b:268,w:159,t:28,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 Pierś + Kuskus + Warzywa',cls:'',kcal:798,b:99,w:57,t:13,
+ing:'400g pierś · 55g kuskus · 200g mix warzywny · 100g pomidory · 5ml olej',
+recipe:'Kuskus: zalej wrzątkiem, przykryj 5 min. Kurczak w paski. Warzywa. Pomidory.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Ziemniaki',cls:'',kcal:598,b:72,w:50,t:11,
+ing:'2 jajka · 3 białka · 250g twaróg · 150g ziemniaki · 200g marchewka',recipe:'Ziemniaki + marchewka 15 min.'}
+]},
+{n:'ŚRO',cls:'org',bdg:'org',bdgT:'SERCA MYŚLIWSKU 🫀',kcal:2073,b:269,w:130,t:48,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🫀 Serca Po Myśliwsku + Kasza',cls:'org',kcal:889,b:92,w:52,t:33,
+ing:'300g serca · 150g pierś · 55g kasza gryczana · 150g pieczarki · 100g cebula',
+recipe:'Kasza 10 min. Serca gotuj w wodzie 20 min, pokrój. Pierś osobno. Pieczarki + cebula smaż na suchej patelni. Wszystko razem.'},
+{time:'19:00',name:'🥚 Jajka(2) + Twaróg (więcej)',cls:'',kcal:536,b:80,w:26,t:11,
+ing:'2 jajka · 3 białka · 300g twaróg · 200g mix warzywny',recipe:'Standard.'}
+]},
+{n:'CZW',cls:'',bdg:'std',bdgT:'BASMATI',kcal:2126,b:276,w:175,t:29,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 Pierś + Ryż Basmati + Brokuły + Marchewka',cls:'',kcal:822,b:99,w:66,t:13,
+ing:'400g pierś · 65g ryż basmati · 200g brokuły · 100g marchewka · 5ml olej',
+recipe:'Ryż basmati 15 min. Kurczak. Brokuły + marchewka 5 min.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Groszek',cls:'',kcal:656,b:80,w:57,t:12,
+ing:'2 jajka · 3 białka · 250g twaróg · 35g kasza gryczana · 150g groszek',recipe:'Kasza 10 min. Groszek 3 min.'}
+]},
+{n:'PIĄ',cls:'',bdg:'std',bdgT:'SPAGHETTI 🍝',kcal:1954,b:264,w:146,t:27,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍝 Spaghetti Bolognese z Kurczaka',cls:'',kcal:790,b:88,w:71,t:12,
+ing:'350g pierś mielona · 70g spaghetti · 150g passata · 80g cebula · 80g marchewka · 5ml olej',
+recipe:'Pierś zmiel lub posiekaj drobno. Cebula + marchew smaż. Dodaj passatę. Spaghetti al dente.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Warzywa',cls:'',kcal:516,b:79,w:23,t:11,
+ing:'2 jajka · 3 białka · 300g twaróg · 150g mix warzywny',recipe:'Standard.'}
+]},
+{n:'SOB',cls:'psm',bdg:'psm',bdgT:'TRUE PSMF ⚡',kcal:1189,b:222,w:40,t:10,
+meals:[
+{time:'04:00',name:'🥤 Shake PSMF + Chia',cls:'psm',kcal:484,b:92,w:21,t:3,ing:'400g twaróg · woda · 6 białek · 10g chia',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity + Survival',cls:'psm',kcal:5,b:0,w:1,t:0,ing:'Shaker + survival drink',recipe:''},
+{time:'16:00',name:'🍗 GOTOWANY kurczak + warzywa',cls:'psm',kcal:507,b:90,w:11,t:7,ing:'400g pierś gotowana · 300g ogórek · 100g sałata',recipe:'Gotuj 20 min.'},
+{time:'19:00',name:'🧀 Mini-twaróg [opcja]',cls:'psm',kcal:193,b:40,w:7,t:0,ing:'150g twaróg · 4 białka',recipe:''}
+]},
+{n:'NIE',cls:'ref',bdg:'ref',bdgT:'REFEED 🟢',kcal:2482,b:244,w:270,t:38,
+meals:[
+{time:'04:00',name:'🥤 Shake REFEED + Chia',cls:'ref',kcal:956,b:110,w:108,t:8,ing:'400g twaróg · 300ml mleko · 6 białek · 120g banan · 50g płatki · 15g miód · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 DUŻY Kurczak + DUŻY Ryż',cls:'ref',kcal:1045,b:99,w:109,t:18,
+ing:'400g pierś · 120g ryż · 200g warzywa · 10ml olej',recipe:'MEGA porcja.'},
+{time:'19:00',name:'🥚 Jajka + Makaron',cls:'ref',kcal:476,b:35,w:52,t:12,
+ing:'2 jajka · 3 białka · 60g makaron · 150g mix warzywny',recipe:'Makaron 8 min.'}
+]}
+],
+// ─── TYDZIEŃ 4 ───
+[
+{n:'PON',cls:'',bdg:'std',bdgT:'TANDOORI',kcal:2109,b:274,w:171,t:29,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 Kurczak Tandoori + Ryż Basmati',cls:'',kcal:829,b:101,w:66,t:13,
+ing:'400g pierś · 65g ryż basmati · 50g jogurt 0% · 200g mix warzywny · 5ml olej',
+recipe:'Marynuj pierś w jogurcie + curry/kurkuma 30 min (lub wieczorem). Ryż basmati 15 min. Warzywa.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Kasza Gryczana',cls:'',kcal:632,b:76,w:53,t:12,
+ing:'2 jajka · 3 białka · 250g twaróg · 40g kasza gryczana · 200g mix warzywny',recipe:'Standard.'}
+]},
+{n:'WTO',cls:'',bdg:'std',bdgT:'ZIEMNIAKI',kcal:1984,b:267,w:146,t:28,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 Pierś + Ziemniaki + Warzywa',cls:'',kcal:727,b:95,w:48,t:12,
+ing:'400g pierś · 200g ziemniaki · 200g mix warzywny · 5ml olej',
+recipe:'Ziemniaki gotuj 15 min. Kurczak w kostkę. Warzywa mikrofala.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Fasolka',cls:'',kcal:609,b:75,w:46,t:12,
+ing:'2 jajka · 3 białka · 250g twaróg · 35g kasza jaglana · 200g fasolka szparagowa',recipe:'Kasza 15 min. Fasolka 4 min.'}
+]},
+{n:'ŚRO',cls:'org',bdg:'org',bdgT:'SERCA + SZPINAK 🫀',kcal:2130,b:278,w:128,t:49,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🫀 Serca + Pierś + Jaglana + Szpinak',cls:'org',kcal:946,b:101,w:50,t:34,
+ing:'300g serca · 200g pierś · 50g kasza jaglana · 100g cebula · 150g szpinak',
+recipe:'Kasza PRZEPŁUCZ 15 min. Serca gotuj w wodzie 20 min. Pierś. Szpinak.'},
+{time:'19:00',name:'🥚 Jajka(2) + Twaróg (więcej)',cls:'',kcal:536,b:80,w:26,t:11,
+ing:'2 jajka · 3 białka · 300g twaróg · 200g mix warzywny',recipe:'Standard.'}
+]},
+{n:'CZW',cls:'',bdg:'std',bdgT:'HONEY GARLIC',kcal:2152,b:275,w:182,t:29,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 Kurczak Honey Garlic + Ryż',cls:'',kcal:848,b:98,w:73,t:13,
+ing:'400g pierś · 70g ryż · 200g brokuły · 10g miód · 10ml sos sojowy · 5ml olej',
+recipe:'Kurczak smaż w kostkę, polej miód + sos sojowy na koniec. Ryż 12 min. Brokuły.'},
+{time:'19:00',name:'🥚 Jajka + Twaróg + Groszek',cls:'',kcal:656,b:80,w:57,t:12,
+ing:'2 jajka · 3 białka · 250g twaróg · 35g kasza gryczana · 150g groszek',recipe:'Kasza 10 min. Groszek 3 min.'}
+]},
+{n:'PIĄ',cls:'org',bdg:'org',bdgT:'SERCA + GROSZEK 🫀',kcal:2258,b:285,w:154,t:49,
+meals:[
+{time:'04:00',name:'🥤 Shake Banana + Chia',cls:'',kcal:643,b:97,w:51,t:4,ing:'400g twaróg · 250ml mleko · 5 białek · 80g banan · 10g chia + supl.',recipe:'Blend banana+chia wieczorem. Rano 5 sek wstrząśnij.'},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🫀 Serca + Pierś + Jaglana + Groszek',cls:'org',kcal:1074,b:108,w:76,t:34,
+ing:'300g serca · 200g pierś · 50g kasza jaglana · 100g cebula · 200g groszek',
+recipe:'Kasza PRZEPŁUCZ 15 min. Serca gotuj 20 min. Pierś. Groszek 3 min.'},
+{time:'19:00',name:'🥚 Jajka(2) + Twaróg (więcej)',cls:'',kcal:536,b:80,w:26,t:11,
+ing:'2 jajka · 3 białka · 300g twaróg · 200g mix warzywny',recipe:'Standard.'}
+]},
+{n:'SOB',cls:'psm',bdg:'psm',bdgT:'TRUE PSMF ⚡',kcal:1189,b:222,w:40,t:10,
+meals:[
+{time:'04:00',name:'🥤 Shake PSMF + Chia',cls:'psm',kcal:484,b:92,w:21,t:3,ing:'400g twaróg · woda · 6 białek · 10g chia',recipe:''},
+{time:'10:00',name:'💧 Elektrolity + Survival',cls:'psm',kcal:5,b:0,w:1,t:0,ing:'Shaker + survival',recipe:''},
+{time:'16:00',name:'🍗 GOTOWANY kurczak + warzywa',cls:'psm',kcal:507,b:90,w:11,t:7,ing:'400g pierś gotowana · 300g ogórek · 100g sałata',recipe:''},
+{time:'19:00',name:'🧀 Mini-twaróg [opcja]',cls:'psm',kcal:193,b:40,w:7,t:0,ing:'150g twaróg · 4 białka',recipe:''}
+]},
+{n:'NIE',cls:'ref',bdg:'ref',bdgT:'REFEED 🟢',kcal:2451,b:240,w:269,t:37,
+meals:[
+{time:'04:00',name:'🥤 Shake REFEED + Chia',cls:'ref',kcal:956,b:110,w:108,t:8,ing:'400g twaróg · 300ml mleko · 6 białek · 120g banan · 50g płatki · 15g miód · 10g chia + supl.',recipe:''},
+{time:'10:00',name:'💧 Elektrolity',cls:'',kcal:5,b:0,w:1,t:0,ing:'Shaker',recipe:''},
+{time:'16:00',name:'🍗 DUŻY Kurczak + DUŻY Ryż',cls:'ref',kcal:1045,b:99,w:109,t:18,
+ing:'400g pierś · 120g ryż · 200g warzywa · 10ml olej',recipe:'MEGA porcja.'},
+{time:'19:00',name:'🥚 Jajka + Ryż',cls:'ref',kcal:445,b:31,w:51,t:11,
+ing:'2 jajka · 3 białka · 50g ryż · 150g mix warzywny',recipe:''}
+]}
+]
+];
+
+// WEEKLY AVERAGES for display
+const WAVG=[
+{kcal:1998,b:261,w:152,t:31,cost:299},
+{kcal:2017,b:262,w:152,t:33,cost:304},
+{kcal:1994,b:259,w:156,t:30,cost:302},
+{kcal:2039,b:263,w:156,t:33,cost:306}
+];
+
+// ═══════════════════════════════════════════════════════
+// SHOPPING DATA PER WEEK
+// ═══════════════════════════════════════════════════════
+const SHOPPING=[
+// T1
+[
+{i:'🔴',n:'BIAŁKO',items:[
+{n:'Pierś kurczaka',a:'2.4 kg',p:52},{n:'Serca kurczaka',a:'300g',p:5},
+{n:'Wątróbka drobiowa',a:'200g',p:4},{n:'Jajka M (10szt)',a:'8 opakowań',p:88},
+{n:'Twaróg Pilos 0% (250g)',a:'18 szt',p:63}
+]},
+{i:'🟡',n:'WĘGLE',items:[
+{n:'Ryż biały',a:'500g',p:5},{n:'Kasza gryczana',a:'500g',p:5},
+{n:'Kasza jaglana',a:'500g',p:6},{n:'Makaron pełnoziarnisty',a:'500g',p:5},
+{n:'Płatki owsiane',a:'500g',p:4},{n:'Ziemniaki',a:'500g',p:2}
+]},
+{i:'🟢',n:'WARZYWA / OWOCE',items:[
+{n:'Brokuły mrożone',a:'500g',p:5},{n:'Mix warzywny mrożony',a:'1.5kg',p:12},
+{n:'Szpinak mrożony',a:'500g',p:6},{n:'Groszek mrożony',a:'300g',p:4},
+{n:'Marchewka',a:'500g',p:3},{n:'Cebula',a:'500g',p:2},
+{n:'Ogórki',a:'600g',p:4},{n:'Sałata lodowa',a:'1 szt',p:3},
+{n:'Cytryny',a:'7 szt',p:5},{n:'Banany',a:'800g',p:6},
+
+]},
+{i:'⚙️',n:'INNE',items:[
+{n:'Olej rzepakowy',a:'(masz)',p:0},{n:'Sól himalajska',a:'(masz)',p:0},
+{n:'Mleko 0.5%',a:'1L',p:3},{n:'Miód',a:'(masz)',p:0},{n:'Nasiona chia',a:'500g (starczy ~5tyg)',p:12},{n:'Glicyna (proszek)',a:'250g (starczy ~7tyg)',p:25}
+]}
+],
+// T2
+[
+{i:'🔴',n:'BIAŁKO',items:[
+{n:'Pierś kurczaka',a:'2.4 kg',p:52},{n:'Serca kurczaka',a:'600g',p:10},
+{n:'Jajka M (10szt)',a:'8 opakowań',p:88},{n:'Twaróg Pilos 0% (250g)',a:'18 szt',p:63}
+]},
+{i:'🟡',n:'WĘGLE',items:[
+{n:'Ryż biały',a:'500g',p:5},{n:'Kasza gryczana',a:'500g',p:5},
+{n:'Kasza jaglana',a:'500g',p:6},{n:'Bulgur',a:'500g',p:5},
+{n:'Płatki owsiane',a:'500g',p:4},{n:'Ziemniaki',a:'500g',p:2}
+]},
+{i:'🟢',n:'WARZYWA / OWOCE',items:[
+{n:'Kalafior mrożony',a:'500g',p:5},{n:'Mix warzywny mrożony',a:'1.5kg',p:12},
+{n:'Szpinak mrożony',a:'500g',p:6},{n:'Groszek mrożony',a:'300g',p:4},
+{n:'Fasolka szparagowa mrożona',a:'400g',p:5},{n:'Cukinia',a:'400g',p:4},
+{n:'Pomidory',a:'200g',p:3},{n:'Marchewka',a:'500g',p:3},
+{n:'Cebula',a:'500g',p:2},{n:'Ogórki',a:'600g',p:4},
+{n:'Sałata lodowa',a:'1 szt',p:3},{n:'Cytryny',a:'7 szt',p:5},
+{n:'Banany',a:'800g',p:6},
+]},
+{i:'⚙️',n:'INNE',items:[
+{n:'Sos sojowy',a:'(masz/150ml)',p:4},{n:'Mleko 0.5%',a:'1L',p:3},
+{n:'Nasiona chia',a:'100g',p:5},{n:'Nasiona chia',a:'(masz z T1)',p:0},{n:'Glicyna',a:'(masz z T1)',p:0}
+]}
+],
+// T3
+[
+{i:'🔴',n:'BIAŁKO',items:[
+{n:'Pierś kurczaka',a:'2.55 kg',p:55},{n:'Serca kurczaka',a:'300g',p:5},
+{n:'Jajka M (10szt)',a:'8 opakowań',p:88},{n:'Twaróg Pilos 0% (250g)',a:'18 szt',p:63}
+]},
+{i:'🟡',n:'WĘGLE',items:[
+{n:'Ryż biały',a:'500g',p:5},{n:'Ryż basmati',a:'500g',p:6},
+{n:'Kasza gryczana',a:'500g',p:5},{n:'Kasza jaglana',a:'500g',p:6},
+{n:'Kuskus',a:'500g',p:5},{n:'Spaghetti',a:'500g',p:5},
+{n:'Płatki owsiane',a:'500g',p:4},{n:'Ziemniaki',a:'500g',p:2}
+]},
+{i:'🟢',n:'WARZYWA / OWOCE',items:[
+{n:'Brokuły mrożone',a:'500g',p:5},{n:'Mix warzywny mrożony',a:'1.5kg',p:12},
+{n:'Pieczarki',a:'300g',p:4},{n:'Pomidory',a:'500g',p:5},
+{n:'Passata',a:'300g',p:3},{n:'Marchewka',a:'500g',p:3},
+{n:'Cebula',a:'500g',p:2},{n:'Ogórki',a:'600g',p:4},
+{n:'Sałata lodowa',a:'1 szt',p:3},{n:'Cytryny',a:'7 szt',p:5},
+{n:'Banany',a:'800g',p:6},
+]},
+{i:'⚙️',n:'INNE',items:[
+{n:'Śmietana 12%',a:'200ml',p:3},{n:'Mleko 0.5%',a:'1L',p:3},
+{n:'Nasiona chia',a:'100g',p:5},{n:'Nasiona chia',a:'(masz z T1)',p:0},{n:'Glicyna',a:'(masz z T1)',p:0}
+]}
+],
+// T4
+[
+{i:'🔴',n:'BIAŁKO',items:[
+{n:'Pierś kurczaka',a:'2.4 kg',p:52},{n:'Serca kurczaka',a:'600g',p:10},
+{n:'Jajka M (10szt)',a:'8 opakowań',p:88},{n:'Twaróg Pilos 0% (250g)',a:'18 szt',p:63}
+]},
+{i:'🟡',n:'WĘGLE',items:[
+{n:'Ryż biały',a:'500g',p:5},{n:'Ryż basmati',a:'500g',p:6},
+{n:'Kasza gryczana',a:'500g',p:5},{n:'Kasza jaglana',a:'500g',p:6},
+{n:'Płatki owsiane',a:'500g',p:4},{n:'Ziemniaki',a:'500g',p:2}
+]},
+{i:'🟢',n:'WARZYWA / OWOCE',items:[
+{n:'Brokuły mrożone',a:'500g',p:5},{n:'Mix warzywny mrożony',a:'1.5kg',p:12},
+{n:'Szpinak mrożony',a:'500g',p:6},{n:'Groszek mrożony',a:'300g',p:4},
+{n:'Fasolka szparagowa mrożona',a:'400g',p:5},{n:'Marchewka',a:'500g',p:3},
+{n:'Cebula',a:'500g',p:2},{n:'Ogórki',a:'600g',p:4},
+{n:'Sałata lodowa',a:'1 szt',p:3},{n:'Cytryny',a:'7 szt',p:5},
+{n:'Banany',a:'800g',p:6},
+]},
+{i:'⚙️',n:'INNE',items:[
+{n:'Sos sojowy',a:'(masz/150ml)',p:4},{n:'Jogurt 0%',a:'200g',p:3},
+{n:'Miód',a:'(masz)',p:0},{n:'Mleko 0.5%',a:'1L',p:3},
+{n:'Nasiona chia',a:'100g',p:5},{n:'Nasiona chia',a:'(masz z T1)',p:0},{n:'Glicyna',a:'(masz z T1)',p:0}
+]}
+]
+];
+
+// ═══════════════════════════════════════════════════════
+// SUPPLEMENTS & PSMF
+// ═══════════════════════════════════════════════════════
+const SUPPS=[
+{t:'04:00',l:'🌅 Rano (z shake)',items:['L-Tyrozyna 1000mg','Panax Ginseng 600mg','D3+K2','Vit C 1000mg','B12 1000mcg','PROZMA+','ALCAR 500mg','NAC 600mg','Shilajit','Boron 3mg']},
+{t:'16:00',l:'🍽️ Z posiłkiem',items:['Omega-3 4×kaps (2 z obiadem + 2 z kolacją)']},
+{t:'21:00',l:'🌙 Wieczór',items:['MSM 2g + Glicyna 5g w wodzie 300ml']},
+{t:'22:00',l:'😴 Przed snem',items:['Melatonina 3mg','PROZMA+ (2-ga dawka)']}
+];
+const PSMF_CHK=['Shake PSMF + Chia blend wieczorem → rano wstrząśnij','10 suplementów połkniętych','Elektrolity SHOT o 10:00 (shaker!)','Survival Drink (1L) w ciągu dnia','Gotowany kurczak 400g o 16:00 (ZERO oleju!)','Surowe warzywa (ogórek + sałata)','Mini-twaróg + białka o 19:00 (opcja)','Min. 5L wody łącznie','Samopoczucie OK — brak zawrotów','Melatonina + PROZMA+ przed snem'];
+
+// MEAL PREP data
+const PREP=[
+// T1
+['NIE wieczór: Blend shake PON (banana + 10g chia). Ugotuj jajka na 2 dni (10 szt). Odmierz twaróg.','WTO wieczór: Blend shake ŚRO (banana + chia). Ugotuj jajka. Przygotuj serca (300g) — możesz ugotować z wieczora.','CZW wieczór: Blend shake PIĄ (banana + chia). Ugotuj jajka. Odmierz wątróbkę 200g (rozmrażaj w lodówce).','SOB: PSMF — minimalne gotowanie. Ugotuj pierś 400g w wodzie. Blend shake PSMF + chia na wieczór.'],
+// T2
+['NIE wieczór: Blend shake PON (banana + chia). Ugotuj jajka 10 szt. Odmierz kasza gryczana + kalafior.','WTO wieczór: Blend shake ŚRO (banana + chia). Ugotuj jajka. Przygotuj serca 300g.','CZW wieczór: Blend shake PIĄ (banana + chia). Ugotuj jajka. Przygotuj serca 300g (2-gi dzień serc w tygodniu).','SOB: PSMF day. Ugotuj pierś. Blend shake.'],
+// T3
+['NIE wieczór: Blend shake PON (banana + chia). Ugotuj jajka. Przygotuj sos węgierski (cebula + pomidory + śmietana).','WTO wieczór: Blend shake ŚRO (banana + chia). Ugotuj jajka. Przygotuj serca 300g + pieczarki.','CZW wieczór: Blend shake PIĄ (banana + chia). Ugotuj jajka. Zmiel/posiekaj 350g piersi na spaghetti.','SOB: PSMF. Ugotuj pierś. Blend shake.'],
+// T4
+['NIE wieczór: Blend shake PON (banana + chia). Ugotuj jajka. Marynuj pierś w jogurcie + curry (tandoori).','WTO wieczór: Blend shake ŚRO (banana + chia). Ugotuj jajka. Przygotuj serca 300g.','CZW wieczór: Blend shake PIĄ (banana + chia). Ugotuj jajka. Przygotuj serca 300g + groszek.','SOB: PSMF. Ugotuj pierś. Blend shake.']
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+const LS='dmv7';
+let S;
+function load(){try{S=JSON.parse(localStorage.getItem(LS))||{}}catch(e){S={}}
+if(!S.w)S.w=[];if(!S.water)S.water=0;if(!S.waterDate)S.waterDate='';
+if(!S.wk)S.wk=0;if(!S.day)S.day=0;
+if(!S.shopChk)S.shopChk={};if(!S.suppTk)S.suppTk={};
+if(!S.psmfChk)S.psmfChk={};if(!S.streak)S.streak=0;
+if(!S.shopWk)S.shopWk=0;if(!S.prepWk)S.prepWk=0;if(!S.mealChk)S.mealChk={};if(!S.notifSent)S.notifSent={};
+}
+function save(){localStorage.setItem(LS,JSON.stringify(S))}
+function toast(m,ok=true){const t=document.getElementById('toast');t.className='toast on '+(ok?'ok':'er');document.getElementById('tIco').textContent=ok?'✅':'❌';document.getElementById('tMsg').textContent=m;setTimeout(()=>t.classList.remove('on'),2200)}
+
+// ═══════════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════════
+function navT(){document.getElementById('nav').classList.toggle('on');document.getElementById('ov').classList.toggle('on');const b=document.getElementById('mbtn');b.classList.toggle('x');b.textContent=b.classList.contains('x')?'✕':'☰'}
+function navC(){document.getElementById('nav').classList.remove('on');document.getElementById('ov').classList.remove('on');const b=document.getElementById('mbtn');b.classList.remove('x');b.textContent='☰'}
+function go(id){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');document.querySelectorAll('.nbtn').forEach(b=>{b.classList.toggle('on',b.dataset.s===id)});navC()}
+document.querySelectorAll('.nbtn').forEach(b=>b.addEventListener('click',()=>go(b.dataset.s)));
+
+// ═══════════════════════════════════════════════════════
+// WEEK SELECTOR (shared)
+// ═══════════════════════════════════════════════════════
+function renWeekSel(id,cur,cb){
+let h='';for(let i=0;i<4;i++) h+=`<div class="ws ${cur===i?'on':''}" onclick="${cb}(${i})">T${i+1}</div>`;
+document.getElementById(id).innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════
+function updDash(){
+const di=getCurDi();
+const wk=getCurWk();
+const d=WEEKS[wk][di];
+document.getElementById('dKc').textContent=d.kcal;
+document.getElementById('dP').textContent=d.b;
+document.getElementById('dW').textContent=d.w;
+document.getElementById('dT').textContent=d.t;
+const bg=document.getElementById('dayBdg');bg.textContent=d.bdgT;bg.className='badge '+d.bdg;
+document.getElementById('todD').textContent=new Date().toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'short'});
+document.getElementById('hWk').textContent=S.wk+1;
+let h='';const cwk=getCurWk();d.meals.forEach((m,mi)=>{
+const done=isMealDone(mi);
+h+=`<div class="mc ${m.cls}" style="${done?'opacity:.4':''}">
+<div class="mt">${m.time}</div><div class="mn">${m.name}</div>
+<div class="mm"><span class="mbdg kc">${m.kcal} kcal</span><span class="mbdg bp">${m.b}g B</span></div>
+<div class="mchk-row"><button class="mchk-btn ${done?'done':''}" onclick="event.stopPropagation();toggleMeal(${cwk},${getCurDi()},${mi})">${done?'✅ Zjedzone':'☐ Oznacz'}</button><span class="mchk-lbl">${done?'gotowe':''}</span></div>
+</div>`;});
+document.getElementById('todM').innerHTML=h;
+const td=new Date().toDateString();if(S.waterDate!==td){S.water=0;S.waterDate=td;save()}
+document.getElementById('dWat').textContent=(S.water/1000).toFixed(1);
+document.getElementById('hw').textContent=(S.water/1000).toFixed(1);
+if(S.w.length){const last=S.w[S.w.length-1].w;document.getElementById('hwt').textContent=last.toFixed(1);document.getElementById('cWt').textContent=last.toFixed(1);const lost=Math.max(0,(100-last)).toFixed(1);const left=Math.max(0,(last-82)).toFixed(1);document.getElementById('lostK').textContent=lost;document.getElementById('leftK').textContent=left;const pct=Math.min(100,Math.max(0,(100-last)/(100-82)*100));document.getElementById('pRing').setAttribute('stroke-dashoffset',440-(440*pct/100));}
+document.getElementById('dStr').textContent=S.streak;
+}
+
+// ═══════════════════════════════════════════════════════
+// JADŁOSPIS
+// ═══════════════════════════════════════════════════════
+function setWk(i){S.wk=i;save();renWeekSel('weekSel',S.wk,'setWk');renPlan();updDash()}
+function setDay(i){S.day=i;save();renPlan()}
+function renPlan(){
+renWeekSel('weekSel',S.wk,'setWk');
+['sc1','sc2','sc3'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.className='scale-btn'+(SCALE===i+1?' on':'');});
+let h='';WEEKS[S.wk].forEach((d,i)=>{h+=`<button class="tab ${d.cls} ${S.day===i?'on':''}" onclick="setDay(${i})">${d.n}</button>`});
+document.getElementById('dayTabs').innerHTML=h;
+const d=WEEKS[S.wk][S.day];
+let c=`<div class="al ${d.bdg==='psm'?'err':d.bdg==='ref'?'ok':d.bdg==='org'?'info':'info'}" style="margin-bottom:12px"><strong>${d.bdgT}</strong> — ${d.kcal} kcal | ${d.b}g B | ${d.w}g W | ${d.t}g T</div>`;
+d.meals.forEach((m,mi)=>{
+const scaledIng=scaleIng(m.ing);
+c+=`<div class="mc ${m.cls}"><div class="mt">${m.time} | ${m.name}</div>
+<div class="mm"><span class="mbdg kc">${SCALE>1?Math.round(m.kcal*SCALE):m.kcal} kcal</span><span class="mbdg bp">${SCALE>1?Math.round(m.b*SCALE):m.b}g B</span>${m.w?`<span class="mbdg wg">${SCALE>1?Math.round(m.w*SCALE):m.w}g W</span>`:''}<span class="mbdg tl">${SCALE>1?Math.round(m.t*SCALE):m.t}g T</span></div>
+<div class="mi">${scaledIng.replace(/\n/g,'<br>')}</div>
+${m.recipe?`<details style="margin-top:6px"><summary style="color:var(--or);cursor:pointer;font-size:.82em;font-weight:600">📖 Przepis</summary>
+<div style="margin-top:5px;font-size:.82em;color:var(--t2);padding:6px;background:var(--bg3);border-radius:6px">${m.recipe}</div></details>`:''}</div>`;});
+c+=`<div class="msbar"><div class="i"><div class="l">Kcal</div><div class="v">${d.kcal}</div></div><div class="i"><div class="l">Białko</div><div class="v">${d.b}g</div></div><div class="i"><div class="l">Węgle</div><div class="v">${d.w}g</div></div><div class="i"><div class="l">Tłuszcz</div><div class="v">${d.t}g</div></div></div>`;
+document.getElementById('dayC').innerHTML=c;
+}
+
+// ═══════════════════════════════════════════════════════
+// ZAKUPY
+// ═══════════════════════════════════════════════════════
+function setShopWk(i){S.shopWk=i;save();renShop()}
+function renShop(){
+renWeekSel('shopWeekSel',S.shopWk,'setShopWk');
+document.getElementById('shopWkLbl').textContent='Tydzień '+(S.shopWk+1);
+const shop=SHOPPING[S.shopWk];
+let h='',tot=0,full=0;
+shop.forEach((cat,ci)=>{
+const ck=`w${S.shopWk}c${ci}`;const col=S.shopChk[ck+'_col'];
+h+=`<div class="scat"><div class="sh ${col?'col':''}" onclick="shopCat('${ck}')"><span>${cat.i}</span><span>${cat.n}</span><span class="arr">▼</span></div><div class="sitems ${col?'hid':''}">`;
+cat.items.forEach((it,ii)=>{
+const ik=`w${S.shopWk}-${ci}-${ii}`;const ch=S.shopChk[ik];full+=it.p;if(!ch)tot+=it.p;
+h+=`<div class="si ${ch?'chk':''}"><div class="schk ${ch?'on':''}" onclick="shopIt('${ik}')"></div><span class="sn">${it.n}</span><span class="sq">${it.a}</span><span class="sp">${it.p>0?it.p+' zł':'-'}</span></div>`;});
+h+=`</div></div>`;});
+document.getElementById('shopC').innerHTML=h;
+document.getElementById('shopTot').textContent=tot+' zł / '+full+' zł';
+}
+function shopCat(k){S.shopChk[k+'_col']=!S.shopChk[k+'_col'];save();renShop()}
+function shopIt(k){S.shopChk[k]=!S.shopChk[k];save();renShop()}
+function shopRst(){const wk=S.shopWk;Object.keys(S.shopChk).forEach(k=>{if(k.startsWith('w'+wk))delete S.shopChk[k]});save();renShop();toast('Lista zresetowana')}
+
+// ═══════════════════════════════════════════════════════
+// WAGA
+// ═══════════════════════════════════════════════════════
+function addW(){const w=parseFloat(document.getElementById('wIn').value);const d=document.getElementById('dIn').value;if(!w||w<50||w>200){toast('Waga 50-200',false);return}if(!d){toast('Wybierz datę',false);return}
+const ex=S.w.findIndex(x=>x.d===d);if(ex>=0)S.w[ex].w=w;else S.w.push({d,w});S.w.sort((a,b)=>new Date(a.d)-new Date(b.d));save();renWaga();updDash();toast(w+' kg ✓');document.getElementById('wIn').value=''}
+function delW(d){S.w=S.w.filter(x=>x.d!==d);save();renWaga();updDash();toast('Usunięto')}
+function renWaga(){renHist();renStats();renChart()}
+function renHist(){const box=document.getElementById('wHist');if(!S.w.length){box.innerHTML='<p style="color:var(--t3);text-align:center;padding:14px">Brak pomiarów</p>';return}
+let h='';[...S.w].reverse().forEach((e,i,a)=>{const prev=a[i+1];const ch=prev?(e.w-prev.w).toFixed(1):0;const cls=ch<0?'dn':ch>0?'up':'';const sg=ch>0?'+':'';
+h+=`<div class="hi"><span class="dt">${new Date(e.d).toLocaleDateString('pl-PL',{day:'numeric',month:'short'})}</span><span class="wt">${e.w.toFixed(1)} kg</span><span class="ch ${cls}">${sg}${ch} kg</span><button class="del" onclick="delW('${e.d}')">🗑️</button></div>`});
+box.innerHTML=h}
+function renStats(){if(!S.w.length)return;const f=S.w[0].w,l=S.w[S.w.length-1].w,lo=Math.min(...S.w.map(x=>x.w));
+const d0=new Date(S.w[0].d),dL=new Date(S.w[S.w.length-1].d);
+const wks=Math.max(1,(dL-d0)/(7*86400000));
+const avg=((f-l)/wks).toFixed(1);const left=l-82;const days=left>0?Math.ceil(left/Math.max(0.5,parseFloat(avg))*7):0;
+document.getElementById('sStr').textContent=f.toFixed(1);document.getElementById('sLow').textContent=lo.toFixed(1);document.getElementById('sAvg').textContent=avg;document.getElementById('sDays').textContent=days>0?days:'—'}
+function renChart(){const cv=document.getElementById('wChart');const ctx=cv.getContext('2d');const W=cv.parentElement.clientWidth-28;const H=195;cv.width=W;cv.height=H;ctx.fillStyle='#1a2336';ctx.fillRect(0,0,W,H);
+if(S.w.length<2){ctx.fillStyle='#475569';ctx.font='12px Outfit';ctx.textAlign='center';ctx.fillText('Dodaj min. 2 pomiary',W/2,H/2);return}
+const data=S.w.slice(-30);const vals=data.map(d=>d.w);const mn=Math.min(...vals)-1,mx=Math.max(...vals)+1;
+const p={t:16,r:16,b:24,l:44};const gW=W-p.l-p.r,gH=H-p.t-p.b;
+ctx.strokeStyle='#243048';ctx.lineWidth=1;
+for(let i=0;i<=4;i++){const y=p.t+gH*i/4;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke();ctx.fillStyle='#475569';ctx.font='9px JetBrains Mono';ctx.textAlign='right';ctx.fillText((mx-(mx-mn)*i/4).toFixed(1),p.l-5,y+3)}
+const gr=ctx.createLinearGradient(0,p.t,0,H-p.b);gr.addColorStop(0,'rgba(255,107,43,.2)');gr.addColorStop(1,'rgba(255,107,43,0)');
+ctx.beginPath();ctx.moveTo(p.l,H-p.b);data.forEach((d,i)=>{const x=p.l+gW*i/(data.length-1);const y=p.t+gH*(1-(d.w-mn)/(mx-mn));ctx.lineTo(x,y)});ctx.lineTo(p.l+gW,H-p.b);ctx.closePath();ctx.fillStyle=gr;ctx.fill();
+ctx.beginPath();data.forEach((d,i)=>{const x=p.l+gW*i/(data.length-1);const y=p.t+gH*(1-(d.w-mn)/(mx-mn));i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.strokeStyle='#ff6b2b';ctx.lineWidth=2;ctx.stroke();
+data.forEach((d,i)=>{const x=p.l+gW*i/(data.length-1);const y=p.t+gH*(1-(d.w-mn)/(mx-mn));ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle='#ff6b2b';ctx.fill()});
+const gY=p.t+gH*(1-(82-mn)/(mx-mn));if(gY>p.t&&gY<H-p.b){ctx.setLineDash([3,3]);ctx.strokeStyle='#34d399';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.l,gY);ctx.lineTo(W-p.r,gY);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#34d399';ctx.font='8px JetBrains Mono';ctx.textAlign='left';ctx.fillText('CEL 82kg',p.l+3,gY-3)}}
+
+// ═══════════════════════════════════════════════════════
+// WODA
+// ═══════════════════════════════════════════════════════
+function watA(ml){const td=new Date().toDateString();if(S.waterDate!==td){S.water=0;S.waterDate=td}
+S.water=Math.max(0,S.water+ml);save();renWat();updDash();toast(ml>0?`+${ml}ml`:`${ml}ml`)}
+function watRst(){S.water=0;save();renWat();updDash();toast('Reset')}
+function renWat(){document.getElementById('wCur').textContent=S.water;const pct=Math.min(100,Math.round(S.water/5000*100));document.getElementById('wPct').textContent=pct;document.getElementById('wLvl').style.height=pct+'%'}
+
+// ═══════════════════════════════════════════════════════
+// SUPLEMENTY
+// ═══════════════════════════════════════════════════════
+function renSupp(){const td=new Date().toDateString();let h='';SUPPS.forEach(s=>{
+h+=`<div class="spblk"><div class="hd"><span class="tm">${s.t}</span><span class="lb">${s.l}</span></div><div class="pills">`;
+s.items.forEach(it=>{const k=`${td}-${s.t}-${it}`;const tk=S.suppTk[k];
+h+=`<div class="pill ${tk?'tk':''}" onclick="suppTog('${k}')">${it}</div>`});
+h+=`</div></div>`});document.getElementById('suppC').innerHTML=h}
+function suppTog(k){S.suppTk[k]=!S.suppTk[k];save();renSupp();toast(S.suppTk[k]?'✓':'Odznaczono')}
+function suppRst(){const td=new Date().toDateString();Object.keys(S.suppTk).forEach(k=>{if(k.startsWith(td))delete S.suppTk[k]});save();renSupp();toast('Reset')}
+
+// ═══════════════════════════════════════════════════════
+// PSMF CHECKLIST
+// ═══════════════════════════════════════════════════════
+function renPsmf(){const td=new Date().toDateString();let h='';PSMF_CHK.forEach((it,i)=>{
+const k=`${td}-psmf-${i}`;const ch=S.psmfChk[k];
+h+=`<div class="qa" onclick="psmfTog('${k}')" style="border-left:3px solid ${ch?'var(--gr)':'var(--bg5)'}"><span class="i">${ch?'✅':'⬜'}</span><div class="t"><div class="tt" style="${ch?'text-decoration:line-through;opacity:.4':''}">${it}</div></div></div>`});
+document.getElementById('psmfChk').innerHTML=h}
+function psmfTog(k){S.psmfChk[k]=!S.psmfChk[k];save();renPsmf()}
+
+// ═══════════════════════════════════════════════════════
+// MEAL PREP
+// ═══════════════════════════════════════════════════════
+function setPrepWk(i){S.prepWk=i;save();renPrep()}
+function renPrep(){
+renWeekSel('prepWeekSel',S.prepWk,'setPrepWk');
+document.getElementById('prepWkLbl').textContent='Tydzień '+(S.prepWk+1);
+let h='';const items=PREP[S.prepWk];
+items.forEach((it,i)=>{
+h+=`<div class="mp-day"><div class="mp-h">📅 Sesja ${i+1}</div><div class="mp-i">${it}</div></div>`;});
+document.getElementById('prepC').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════════
+let TM={s:0,run:false,int:null};
+function tmSet(m){TM.s=m*60;tmUpd();document.getElementById('tmLbl').textContent=m+' min'}
+function tmTog(){if(TM.run){clearInterval(TM.int);TM.run=false;document.getElementById('tmBtn').textContent='▶️ Start'}else{if(TM.s<=0)return;TM.run=true;document.getElementById('tmBtn').textContent='⏸️ Pauza';TM.int=setInterval(()=>{TM.s--;tmUpd();if(TM.s<=0){clearInterval(TM.int);TM.run=false;document.getElementById('tmBtn').textContent='▶️ Start';try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator();const g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;o.type='sine';g.gain.value=.2;o.start();setTimeout(()=>o.stop(),500)}catch(e){}toast('⏰ CZAS!')}},1000)}}
+function tmRst(){clearInterval(TM.int);TM.run=false;TM.s=0;tmUpd();document.getElementById('tmBtn').textContent='▶️ Start';document.getElementById('tmLbl').textContent='Wybierz preset'}
+function tmUpd(){const m=Math.floor(TM.s/60),s=TM.s%60;document.getElementById('tmDisp').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+
+
+
+// ═══════════════════════════════════════════════════════
+// MEAL CHECKBOXES + COMPLIANCE
+// ═══════════════════════════════════════════════════════
+function mealKey(dayOffset){
+const d=new Date();d.setDate(d.getDate()+dayOffset);
+return d.toISOString().split('T')[0];
+}
+function toggleMeal(wi,di,mi){
+const k=mealKey(0)+'-'+mi;
+if(!S.mealChk)S.mealChk={};
+S.mealChk[k]=!S.mealChk[k];
+save();updDash();renPlan();updCompliance();
+toast(S.mealChk[k]?'Posiłek ✓':'Odznaczono');
+}
+function isMealDone(mi){
+const k=mealKey(0)+'-'+mi;
+return S.mealChk&&S.mealChk[k];
+}
+function todayMealsDone(){
+const d=WEEKS[getCurWk()][getCurDi()];
+let done=0;
+d.meals.forEach((m,i)=>{if(isMealDone(i))done++});
+return {done,total:d.meals.length};
+}
+function getCurDi(){const dow=new Date().getDay();return dow===0?6:dow-1;}
+function getCurWk(){
+if(S.startDate){
+const start=new Date(S.startDate);const now=new Date();
+start.setHours(0,0,0,0);now.setHours(0,0,0,0);
+const days=Math.floor((now-start)/(86400000));
+const weeks=Math.floor(days/7);
+return weeks%4;
+}
+return S.wk;
+}
+function updCompliance(){
+if(!S.mealChk)S.mealChk={};
+const bar=document.getElementById('compBar');
+const lbl=document.getElementById('compLbl');
+const dayNames=['PON','WTO','ŚRO','CZW','PIĄ','SOB','NIE'];
+let bh='',lh='',weekDone=0,weekTotal=0;
+const today=new Date();const dow=today.getDay();const mondayOff=dow===0?-6:1-dow;
+for(let i=0;i<7;i++){
+const d=new Date(today);d.setDate(today.getDate()+mondayOff+i);
+const dk=d.toISOString().split('T')[0];
+const wi=getCurWk();const dayData=WEEKS[wi][i];
+const total=dayData.meals.length;
+let done=0;
+dayData.meals.forEach((m,mi)=>{if(S.mealChk[dk+'-'+mi])done++});
+const pct=total>0?Math.round(done/total*100):0;
+weekDone+=done;weekTotal+=total;
+const isToday=dk===mealKey(0);
+const color=pct===100?'var(--gr)':pct>0?'var(--yl)':'var(--bg5)';
+const border=isToday?';border:2px solid var(--or)':'';
+bh+=`<div class="cbar-d" style="height:${Math.max(4,pct)}%;background:${color}${border}"><span class="cbar-v">${pct>0?pct+'%':''}</span></div>`;
+lh+=`<span style="${isToday?'color:var(--or);font-weight:700':''}">${dayNames[i]}</span>`;
+}
+bar.innerHTML=bh;lbl.innerHTML=lh;
+const weekPct=weekTotal>0?Math.round(weekDone/weekTotal*100):0;
+document.getElementById('compPct').textContent=weekPct+'% ten tydzień';
+// Update streak
+const {done:td,total:tt}=todayMealsDone();
+document.getElementById('dStr').textContent=td+'/'+tt;
+}
+
+// ═══════════════════════════════════════════════════════
+// AUTO-WEEK ROTATION
+// ═══════════════════════════════════════════════════════
+function awUpdate(){
+if(S.startDate){
+const wk=getCurWk();
+const di=getCurDi();
+const dayNames=['PON','WTO','ŚRO','CZW','PIĄ','SOB','NIE'];
+const start=new Date(S.startDate);const now=new Date();
+start.setHours(0,0,0,0);now.setHours(0,0,0,0);
+const totalDays=Math.floor((now-start)/86400000)+1;
+document.getElementById('awWk').textContent='T'+(wk+1);
+document.getElementById('awDay').textContent=dayNames[di]+' • Dzień '+totalDays;
+document.getElementById('awSet').textContent='📅 '+S.startDate;
+// Sync week selector
+if(S.wk!==wk){S.wk=wk;save();renPlan();renShop();renPrep();}
+}else{
+document.getElementById('awWk').textContent='T'+(S.wk+1);
+document.getElementById('awDay').textContent='Ustaw datę startu →';
+document.getElementById('awSet').textContent='⚙️ Ustaw start';
+}
+}
+function awConfig(){
+document.getElementById('awModal').style.display='flex';
+if(S.startDate)document.getElementById('awDate').value=S.startDate;
+else document.getElementById('awDate').value=new Date().toISOString().split('T')[0];
+}
+function awSave(){
+const d=document.getElementById('awDate').value;
+if(!d){toast('Wybierz datę',false);return}
+S.startDate=d;save();
+awClose();awUpdate();updDash();renPlan();renShop();renPrep();updCompliance();
+toast('Auto-rotacja włączona ✓');
+}
+function awClear(){
+delete S.startDate;save();
+awClose();awUpdate();updDash();
+toast('Auto-rotacja wyłączona');
+}
+function awClose(){document.getElementById('awModal').style.display='none'}
+
+// ═══════════════════════════════════════════════════════
+// RECIPE SCALING
+// ═══════════════════════════════════════════════════════
+let SCALE=1;
+function setScale(s){
+SCALE=s;renPlan();
+toast(s===1?'Porcja ×1':'Porcja ×'+s+' (batch cooking)');
+}
+function scaleIng(ing){
+if(SCALE===1)return ing;
+return ing.replace(/(\d+(?:[.,]\d+)?)\s*(g|kg|ml|szt|kaps|łyż)/g,(m,n,u)=>{
+const num=parseFloat(n.replace(',','.'));
+const scaled=Math.round(num*SCALE);
+return scaled+u;
+});
+}
+
+// ═══════════════════════════════════════════════════════
+// PWA
+// ═══════════════════════════════════════════════════════
+let deferredPrompt=null;
+function initPWA(){
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('./sw.js').catch(e=>console.log('SW fail:',e));
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;
+document.getElementById('pwaBar').style.display='flex';});
+}
+function pwaInstall(){
+if(deferredPrompt){deferredPrompt.prompt();
+deferredPrompt.userChoice.then(r=>{document.getElementById('pwaBar').style.display='none';deferredPrompt=null;
+if(r.outcome==='accepted')toast('Zainstalowano! 📱');});}
+}
+
+// ═══════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════════════
+const NOTIF_TIMES=[
+{h:4,m:0,msg:'🥤 Czas na shake! Wstań i wstrząśnij.'},
+{h:9,m:50,msg:'💧 Za 10 min elektrolity! Przygotuj shaker.'},
+{h:15,m:45,msg:'🍗 Czas gotować obiad! Sprawdź plan.'},
+{h:21,m:0,msg:'🌙 MSM + Glicyna shot. Przygotuj na noc.'},
+{h:22,m:0,msg:'😴 Melatonina + PROZMA+. Dobranoc!'}
+];
+function notifReq(){
+if(!('Notification' in window)){toast('Brak wsparcia',false);return}
+Notification.requestPermission().then(p=>{
+if(p==='granted'){S.notifOn=true;save();document.getElementById('notifBar').style.display='none';toast('Powiadomienia włączone 🔔');startNotifCheck();}
+else{toast('Odmówiono',false)}
+});
+}
+function notifDismiss(){S.notifDismissed=true;save();document.getElementById('notifBar').style.display='none'}
+function startNotifCheck(){
+if(!S.notifOn)return;
+setInterval(()=>{
+const now=new Date();const h=now.getHours(),m=now.getMinutes();
+const key='notif-'+now.toDateString()+'-'+h+'-'+m;
+if(S.notifSent&&S.notifSent[key])return;
+NOTIF_TIMES.forEach(nt=>{
+if(h===nt.h&&m===nt.m){
+try{new Notification('Diet Master V7',{body:nt.msg,icon:'🔥',tag:'dm-'+nt.h})}catch(e){}
+if(!S.notifSent)S.notifSent={};S.notifSent[key]=true;save();
+}});
+},30000); // check every 30s
+}
+function initNotif(){
+if(S.notifOn&&Notification.permission==='granted'){
+document.getElementById('notifBar').style.display='none';
+startNotifCheck();
+}else if(!S.notifDismissed&&'Notification' in window){
+document.getElementById('notifBar').style.display='flex';
+}else{
+document.getElementById('notifBar').style.display='none';
+}
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+function init(){
+load();
+if(!S.mealChk)S.mealChk={};
+if(!S.notifSent)S.notifSent={};
+document.getElementById('dIn').value=new Date().toISOString().split('T')[0];
+initPWA();initNotif();awUpdate();
+updDash();renPlan();renShop();renWaga();renWat();renSupp();renPsmf();renPrep();updCompliance();
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
