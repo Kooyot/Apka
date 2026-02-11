@@ -96,6 +96,32 @@ main{padding:72px 14px 40px;max-width:880px;margin:0 auto}
 /* TOAST UPGRADE */
 .toast{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-ov.on{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--brd2);border-radius:var(--rad);padding:20px;max-width:400px;width:100%;max-height:80vh;overflow-y:auto;animation:secIn .25s ease}
+.modal h3{color:var(--or);margin-bottom:12px;font-size:1em}
+.modal .mbody{margin-bottom:14px}
+.modal .mbtns{display:flex;gap:8px;flex-wrap:wrap}
+
+/* PANTRY */
+.pantry-item{display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad3);margin-bottom:6px;align-items:center;transition:border-color .2s}
+.pantry-item:hover{border-color:var(--brd2)}
+.pantry-item .pi-name{font-weight:600;font-size:.88em}
+.pantry-item .pi-cat{font-size:.65em;color:var(--t3)}
+.pantry-item .pi-amt{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gr);font-size:.9em;text-align:right;white-space:nowrap}
+.pantry-item .pi-btns{display:flex;gap:4px}
+.pantry-item .pi-btn{width:28px;height:28px;border-radius:var(--rad3);border:1px solid var(--brd);background:var(--bg3);color:var(--t2);font-size:.75em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.pantry-item .pi-btn:hover{border-color:var(--or);color:var(--or)}
+.pantry-item .pi-btn.del:hover{border-color:var(--rd);color:var(--rd)}
+.pantry-item.low{border-color:var(--yl)}
+.pantry-item.low .pi-amt{color:var(--yl)}
+.pantry-item.empty{border-color:var(--rd);opacity:.5}
+.pantry-item.empty .pi-amt{color:var(--rd)}
+.pantry-cat-hdr{color:var(--or);font-weight:700;font-size:.82em;margin:12px 0 6px;padding:4px 0;border-bottom:1px solid var(--brd)}
+.pantry-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.pantry-warn{background:var(--yl-g);border:1px solid rgba(251,191,36,.3);border-radius:var(--rad3);padding:8px 10px;margin-bottom:6px;font-size:.82em;color:var(--yl)}
+
 /* NAV SMOOTH */
 nav{transition:transform .35s cubic-bezier(.22,.61,.36,1)}
 .overlay{transition:opacity .35s}
@@ -367,6 +393,7 @@ main{padding:64px 8px 28px}.hbadge{display:none}header{padding:0 8px;gap:6px}
 <button class="nbtn on" data-s="dash"><span class="ni"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Dashboard</button>
 <button class="nbtn" data-s="plan"><span class="ni"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="20" cy="18" r="2"/></svg></span>Jadłospis</button>
 <button class="nbtn" data-s="shop"><span class="ni"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></span>Zakupy</button>
+<button class="nbtn" data-s="pantry"><span class="ni"><svg viewBox="0 0 24 24"><path d="M3 3h18v4H3z"/><path d="M3 7v14h18V7"/><path d="M8 11h8"/><path d="M8 15h5"/></svg></span>Spiżarnia</button>
 <button class="nbtn" data-s="waga"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 014 4H8a4 4 0 014-4z"/><path d="M5 7h14l-1 14H6L5 7z"/></svg></span>Waga</button>
 <div class="nlbl">Narzędzia</div>
 <button class="nbtn" data-s="woda"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 2L5 10c-1.5 2-2 4-2 6a9 9 0 0018 0c0-2-.5-4-2-6L12 2z"/></svg></span>Nawodnienie</button>
@@ -457,6 +484,27 @@ main{padding:64px 8px 28px}.hbadge{display:none}header{padding:0 8px;gap:6px}
 </div>
 <div class="sg-result" id="sgResult"></div>
 </div>
+</div></section>
+
+<!-- MODAL (global) -->
+<div class="modal-ov" id="modalOv" onclick="if(event.target===this)modalClose()">
+<div class="modal" id="modal"></div>
+</div>
+
+<!-- SPIŻARNIA -->
+<section id="pantry" class="sec">
+<div class="c"><div class="ch"><div class="ico">🏪</div><h2>Spiżarnia</h2><button class="btn sm out" onclick="pantryReset()">🔄 Reset</button></div>
+<div class="al info"><strong>📦 Ciągły magazyn.</strong> Produkty dodają się z zakupów, zużywają się przy gotowaniu.</div>
+<div class="pantry-stats">
+<div class="sb gr"><div class="sv" id="pTotal">0</div><div class="sl">Produktów</div></div>
+<div class="sb yl"><div class="sv" id="pLow">0</div><div class="sl">Mało</div></div>
+<div class="sb rd"><div class="sv" id="pEmpty">0</div><div class="sl">Brak</div></div>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+<button class="btn sm" onclick="pantryAddManual()">➕ Dodaj ręcznie</button>
+<button class="btn sm out" onclick="pantryFromShop()">🛒 Wczytaj z zakupów</button>
+</div>
+<div id="pantryList"></div>
 </div></section>
 
 <!-- WAGA -->
@@ -1134,6 +1182,7 @@ if(!S.wk)S.wk=0;if(!S.day)S.day=0;
 if(!S.shopChk)S.shopChk={};if(!S.suppTk)S.suppTk={};
 if(!S.psmfChk)S.psmfChk={};if(!S.streak)S.streak=0;
 if(!S.shopWk)S.shopWk=0;if(!S.prepWk)S.prepWk=0;if(!S.mealChk)S.mealChk={};if(!S.notifSent)S.notifSent={};
+if(!S.pantry)S.pantry=[];
 }
 function save(){localStorage.setItem(LS,JSON.stringify(S))}
 function toast(m,ok=true){const t=document.getElementById('toast');t.className='toast on '+(ok?'ok':'er');document.getElementById('tIco').textContent=ok?'✅':'❌';document.getElementById('tMsg').textContent=m;setTimeout(()=>t.classList.remove('on'),2200)}
@@ -1226,7 +1275,57 @@ document.getElementById('shopC').innerHTML=h;
 document.getElementById('shopTot').textContent=tot+' zł / '+full+' zł';
 }
 function shopCat(k){S.shopChk[k+'_col']=!S.shopChk[k+'_col'];save();renShop()}
-function shopIt(k){S.shopChk[k]=!S.shopChk[k];save();renShop()}
+function shopIt(k){
+// If unchecking, just toggle
+if(S.shopChk[k]){
+S.shopChk[k]=false;save();renShop();return;
+}
+// Parse the item info from the key: w{wk}-{ci}-{ii}
+const parts=k.replace(/^w/,'').split('-').map(Number);
+const wk=parts[0],ci=parts[1],ii=parts[2];
+const shop=SHOPPING[wk];
+if(!shop||!shop[ci]||!shop[ci].items[ii])return;
+const item=shop[ci].items[ii];
+const cat=shop[ci];
+const raw=item.a.trim();
+
+// Items with (masz) or price 0 - just check off
+if(raw.startsWith('(')||item.p===0){
+S.shopChk[k]=true;save();renShop();vib(HAP.done);return;
+}
+
+const parsed=parseShopAmt(raw);
+if(!parsed){S.shopChk[k]=true;save();renShop();vib(HAP.done);return}
+
+modalOpen(
+'<h3>🛒 '+item.n+'</h3>'+
+'<div class="mbody">'+
+'<p style="color:var(--t2);font-size:.88em;margin-bottom:12px">Lista: <strong>'+item.a+'</strong></p>'+
+'<div class="mbtns" style="margin-bottom:12px">'+
+'<button class="btn gr" onclick="shopConfirm(\''+k+'\','+parsed.amt+',\''+parsed.unit+'\',\''+item.n.replace(/'/g,"\\'")+'\',\''+cat.n.replace(/'/g,"\\'")+'\',\''+cat.i+'\',true)">✅ Kupiłem całość</button>'+
+'</div>'+
+'<div style="border-top:1px solid var(--brd);padding-top:10px">'+
+'<p style="color:var(--t3);font-size:.78em;margin-bottom:6px">Lub wpisz ile kupiłeś:</p>'+
+'<div class="fr"><div class="ig"><label>Ilość</label><input type="number" id="shopCustomAmt" step="0.01" value="'+parsed.amt+'" style="width:100px"></div>'+
+'<div class="ig"><label>Jedn.</label><input type="text" id="shopCustomUnit" value="'+parsed.unit+'" style="width:80px" readonly></div>'+
+'<button class="btn sm" onclick="shopConfirm(\''+k+'\',parseFloat(document.getElementById(\'shopCustomAmt\').value),\''+parsed.unit+'\',\''+item.n.replace(/'/g,"\\'")+'\',\''+cat.n.replace(/'/g,"\\'")+'\',\''+cat.i+'\',false)" style="height:38px">💾</button></div>'+
+'</div>'+
+'</div>'+
+'<div class="mbtns" style="margin-top:10px"><button class="btn out" onclick="modalClose()">Anuluj</button></div>'
+);
+}
+
+function shopConfirm(k,amt,unit,name,catName,catIcon,isFull){
+if(isNaN(amt)||amt<=0){toast('Nieprawidłowa ilość',false);return}
+S.shopChk[k]=true;
+// Add to pantry
+pantryAdd(name,amt,unit,catName,catIcon);
+// Mark as loaded from this specific purchase
+S['pantry-loaded-'+k]=true;
+save();renShop();renPantry();modalClose();
+vib(HAP.done);
+toast(name+': '+(isFull?'całość':''+amt+' '+unit)+' → spiżarnia ✓');
+}
 function shopRst(){const wk=S.shopWk;Object.keys(S.shopChk).forEach(k=>{if(k.startsWith('w'+wk))delete S.shopChk[k]});save();renShop();toast('Lista zresetowana')}
 
 // ═══════════════════════════════════════════════════════
@@ -1320,10 +1419,200 @@ return d.toISOString().split('T')[0];
 function toggleMeal(wi,di,mi){
 const k=mealKey(0)+'-'+mi;
 if(!S.mealChk)S.mealChk={};
-S.mealChk[k]=!S.mealChk[k];
+
+// If unchecking, just toggle (don't add back to pantry)
+if(S.mealChk[k]){
+S.mealChk[k]=false;
 save();updDash();renPlan();updCompliance();
-toast(S.mealChk[k]?'Posiłek ✓':'Odznaczono');
-vib(S.mealChk[k]?HAP.done:HAP.remove);updBadge();
+toast('Odznaczono');vib(HAP.remove);updBadge();
+return;
+}
+
+// Checking as done — subtract from pantry
+const wk=getCurWk();
+const day=WEEKS[wk][getCurDi()];
+const meal=day.meals[mi];
+
+if(!meal||!meal.ing){
+S.mealChk[k]=true;save();updDash();renPlan();updCompliance();
+toast('Posiłek ✓');vib(HAP.done);updBadge();return;
+}
+
+// Parse ingredients and check pantry
+const ings=parseMealIngs(meal.ing);
+const warnings=[];
+const deductions=[];
+
+ings.forEach(ing=>{
+const match=findPantryMatch(ing.name);
+if(!match){
+// Not tracked in pantry — skip silently
+return;
+}
+
+// Convert units
+const converted=convertToPantryUnit(ing.amt,ing.unit,match.unit);
+if(converted===null)return;
+
+if(match.amt<converted){
+warnings.push(match.name+': masz '+fmtAmt(match.amt,match.unit)+', potrzeba '+fmtAmt(converted,match.unit));
+}
+deductions.push({pantryId:match.id,name:match.name,amt:converted,unit:match.unit});
+});
+
+if(warnings.length>0){
+// Show warning but allow proceeding
+let whtml='<h3>⚠️ Braki w spiżarni</h3><div class="mbody">';
+warnings.forEach(w=>{whtml+='<div class="pantry-warn">'+w+'</div>'});
+whtml+='<p style="color:var(--t2);font-size:.85em;margin-top:8px">Czy mimo to oznaczyć jako ugotowane?</p></div>';
+whtml+='<div class="mbtns"><button class="btn" onclick="mealConfirmCook(\''+k+'\','+JSON.stringify(deductions).replace(/"/g,'&quot;')+')">✅ Tak, ugotowane</button>';
+whtml+='<button class="btn out" onclick="modalClose()">Anuluj</button></div>';
+modalOpen(whtml);
+return;
+}
+
+// No warnings — deduct directly
+applyDeductions(deductions);
+S.mealChk[k]=true;save();updDash();renPlan();updCompliance();renPantry();
+toast('Posiłek ✓ (spiżarnia zaktualizowana)');vib(HAP.done);updBadge();
+}
+
+function mealConfirmCook(k,deductions){
+if(typeof deductions==='string')deductions=JSON.parse(deductions);
+applyDeductions(deductions);
+S.mealChk[k]=true;save();updDash();renPlan();updCompliance();renPantry();
+modalClose();
+toast('Posiłek ✓ (spiżarnia zaktualizowana)');vib(HAP.done);updBadge();
+}
+
+function applyDeductions(deductions){
+pantryInit();
+deductions.forEach(d=>{
+const idx=S.pantry.findIndex(p=>p.id===d.pantryId);
+if(idx>=0){
+S.pantry[idx].amt=Math.max(0,Math.round((S.pantry[idx].amt-d.amt)*100)/100);
+}
+});
+}
+
+// Parse meal ingredient string into [{name,amt,unit}]
+function parseMealIngs(ingStr){
+const result=[];
+ingStr.split('·').forEach(part=>{
+part=part.trim();
+if(!part||part.startsWith('+')||part.startsWith('supl')||part.startsWith('Shaker'))return;
+const m=part.match(/^(\d+(?:[.,]\d+)?)\s*(g|kg|ml|szt|kaps|łyż)?\s+(.+)/i);
+if(m){
+result.push({
+amt:parseFloat(m[1].replace(',','.')),
+unit:(m[2]||'szt').toLowerCase(),
+name:m[3].trim()
+});
+}else{
+// Try "3 jajka" or "5 białek" pattern
+const m2=part.match(/^(\d+)\s+(.+)/);
+if(m2){
+result.push({amt:parseInt(m2[1]),unit:'szt',name:m2[2].trim()});
+}
+}
+});
+return result;
+}
+
+// Match recipe ingredient name to pantry item
+// Returns pantry item or null
+function dePolish(s){
+return s.replace(/ą/g,'a').replace(/ć/g,'c').replace(/ę/g,'e').replace(/ł/g,'l').replace(/ń/g,'n').replace(/ó/g,'o').replace(/ś/g,'s').replace(/ź/g,'z').replace(/ż/g,'z').replace(/Ą/g,'A').replace(/Ć/g,'C').replace(/Ę/g,'E').replace(/Ł/g,'L').replace(/Ń/g,'N').replace(/Ó/g,'O').replace(/Ś/g,'S').replace(/Ź/g,'Z').replace(/Ż/g,'Z');
+}
+function findPantryMatch(ingName){
+pantryInit();
+if(!S.pantry.length)return null;
+const n=dePolish(ingName.toLowerCase()
+.replace(/mrożon[yaei]/gi,'')
+.replace(/surow[yaei]/gi,'')
+.replace(/gotowan[yaei]/gi,'')
+.replace(/mielon[yaei]/gi,'')
+.trim());
+
+// Mapping: recipe name fragments → pantry name fragments (all ASCII after dePolish)
+const MAP=[
+[/piers|kurczak/i, /piers|kurczak/i],
+[/serca/i, /serca/i],
+[/watrobk/i, /watrobk/i],
+[/jaj|biale?k/i, /jajka/i],
+[/twarog|twaroz/i, /twarog/i],
+[/ryz\s*basmat/i, /ryz\s*basmat/i],
+[/ryz/i, /ryz/i],
+[/kasza\s*gryczana/i, /kasza\s*gryczana/i],
+[/kasza\s*jaglan/i, /kasza\s*jaglan/i],
+[/makaron|spaghetti|penne/i, /makaron|spaghetti/i],
+[/platki\s*owsian/i, /platki/i],
+[/kuskus/i, /kuskus/i],
+[/bulgur/i, /bulgur/i],
+[/ziemniak/i, /ziemniak/i],
+[/brokul/i, /brokul/i],
+[/szpinak/i, /szpinak/i],
+[/mix\s*warzyw|mieszanka\s*warzyw|warzyw/i, /mix\s*warzyw|mieszanka|warzyw/i],
+[/marchew/i, /marchew/i],
+[/cebul/i, /cebul/i],
+[/ogorek|ogork/i, /ogork|ogorek/i],
+[/salat/i, /salat/i],
+[/groszek/i, /groszek/i],
+[/fasolka/i, /fasolka/i],
+[/pieczark/i, /pieczark/i],
+[/kalafior/i, /kalafior/i],
+[/cukinia/i, /cukinia/i],
+[/pomidor|passata/i, /pomidor|passata/i],
+[/banan/i, /banan/i],
+[/owoc|lesne/i, /owoc/i],
+[/cytry/i, /cytry/i],
+[/mleko/i, /mleko/i],
+[/olej/i, /olej/i],
+[/miod/i, /miod/i],
+[/sos\s*sojow/i, /sos\s*sojow/i],
+[/smietan/i, /smietan/i],
+[/jogurt/i, /jogurt/i],
+[/chia/i, /chia/i],
+[/glicyn/i, /glicyn/i],
+];
+
+for(const [recipeRx,pantryRx] of MAP){
+if(recipeRx.test(n)){
+const found=S.pantry.find(p=>pantryRx.test(dePolish(p.name.toLowerCase())));
+if(found)return found;
+}
+}
+return null;
+}
+
+// Convert recipe units to pantry units
+function convertToPantryUnit(amt,fromUnit,toUnit){
+fromUnit=fromUnit.toLowerCase();
+toUnit=toUnit.toLowerCase();
+if(fromUnit===toUnit)return amt;
+
+// g → kg
+if(fromUnit==='g'&&toUnit==='kg')return amt/1000;
+if(fromUnit==='kg'&&toUnit==='g')return amt*1000;
+// ml → L
+if(fromUnit==='ml'&&toUnit==='l')return amt/1000;
+if(fromUnit==='l'&&toUnit==='ml')return amt*1000;
+
+// szt → opakowań (eggs: 1 opak = 10 szt)
+if(fromUnit==='szt'&&toUnit==='opakowań')return amt/10;
+if(fromUnit==='opakowań'&&toUnit==='szt')return amt*10;
+
+// g → szt (twaróg: 1szt = 250g)
+if(fromUnit==='g'&&toUnit==='szt')return amt/250;
+if(fromUnit==='szt'&&toUnit==='g')return amt*250;
+
+// g → g (same pack weight - for 500g bags, just pass through)
+return amt;
+}
+
+function fmtAmt(amt,unit){
+if(amt===Math.floor(amt))return amt+' '+unit;
+return (Math.round(amt*100)/100)+' '+unit;
 }
 function isMealDone(mi){
 const k=mealKey(0)+'-'+mi;
@@ -1438,6 +1727,212 @@ return scaled+u;
 // PWA
 // ═══════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════
+// MODAL SYSTEM
+// ═══════════════════════════════════════════════════════
+function modalOpen(html){
+document.getElementById('modal').innerHTML=html;
+document.getElementById('modalOv').classList.add('on');
+}
+function modalClose(){
+document.getElementById('modalOv').classList.remove('on');
+}
+
+// ═══════════════════════════════════════════════════════
+// SPIŻARNIA (PANTRY)
+// ═══════════════════════════════════════════════════════
+// S.pantry = [{id,name,amt,unit,cat,catIcon}]
+function pantryInit(){
+if(!S.pantry)S.pantry=[];
+}
+
+// Normalize name for matching
+function normName(n){
+return n.toLowerCase()
+.replace(/\s*\(.*?\)\s*/g,'')
+.replace(/pilos\s*/gi,'')
+.replace(/mrożon[yaei]\s*/gi,'')
+.replace(/surow[yaei]\s*/gi,'')
+.replace(/gotowan[yaei]\s*/gi,'')
+.replace(/\s+/g,' ')
+.trim();
+}
+
+function pantryFind(name,unit){
+const nn=normName(name);
+return S.pantry.findIndex(p=>normName(p.name)===nn && p.unit===unit);
+}
+
+function pantryAdd(name,amt,unit,cat,catIcon){
+pantryInit();
+const idx=pantryFind(name,unit);
+if(idx>=0){
+S.pantry[idx].amt=Math.round((S.pantry[idx].amt+amt)*100)/100;
+}else{
+S.pantry.push({id:Date.now(),name,amt:Math.round(amt*100)/100,unit,cat:cat||'Inne',catIcon:catIcon||'⚙️'});
+}
+save();renPantry();
+}
+
+function pantrySubtract(name,amt,unit){
+pantryInit();
+const idx=pantryFind(name,unit);
+if(idx>=0){
+S.pantry[idx].amt=Math.round((S.pantry[idx].amt-amt)*100)/100;
+if(S.pantry[idx].amt<=0)S.pantry[idx].amt=0;
+save();renPantry();
+return true;
+}
+return false;
+}
+
+function pantryRemove(id){
+pantryInit();
+S.pantry=S.pantry.filter(p=>p.id!==id);
+save();renPantry();vib(HAP.remove);toast('Usunięto');
+}
+
+function pantryReset(){
+modalOpen('<h3>🗑️ Resetuj spiżarnię</h3><div class="mbody"><p style="color:var(--t2);font-size:.88em">Usunąć <strong>wszystkie</strong> produkty z spiżarni?</p></div><div class="mbtns"><button class="btn rd" onclick="S.pantry=[];save();renPantry();modalClose();toast(\'Spiżarnia wyczyszczona\')">🗑️ Wyczyść</button><button class="btn out" onclick="modalClose()">Anuluj</button></div>');
+}
+
+function pantryEdit(id){
+pantryInit();
+const p=S.pantry.find(x=>x.id===id);
+if(!p)return;
+modalOpen('<h3>✏️ Edytuj: '+p.name+'</h3><div class="mbody"><div class="ig"><label>Ilość ('+p.unit+')</label><input type="number" id="peAmt" step="0.1" value="'+p.amt+'"></div></div><div class="mbtns"><button class="btn" onclick="pantryEditSave('+id+')">💾 Zapisz</button><button class="btn out" onclick="modalClose()">Anuluj</button></div>');
+}
+
+function pantryEditSave(id){
+const v=parseFloat(document.getElementById('peAmt').value);
+if(isNaN(v)||v<0){toast('Nieprawidłowa ilość',false);return}
+const idx=S.pantry.findIndex(p=>p.id===id);
+if(idx>=0){S.pantry[idx].amt=Math.round(v*100)/100;save();renPantry()}
+modalClose();toast('Zapisano ✓');vib(HAP.done);
+}
+
+function pantryAddManual(){
+modalOpen('<h3>➕ Dodaj produkt</h3><div class="mbody"><div class="ig"><label>Nazwa</label><input type="text" id="pmName" placeholder="np. Pierś kurczaka"></div><div class="fr"><div class="ig"><label>Ilość</label><input type="number" id="pmAmt" step="0.1" placeholder="np. 2.4"></div><div class="ig"><label>Jednostka</label><select id="pmUnit"><option value="kg">kg</option><option value="g">g</option><option value="szt">szt</option><option value="opakowań">opakowań</option><option value="L">L</option><option value="ml">ml</option></select></div></div><div class="ig"><label>Kategoria</label><select id="pmCat"><option value="🔴|BIAŁKO">🔴 Białko</option><option value="🟡|WĘGLE">🟡 Węgle</option><option value="🟢|WARZYWA">🟢 Warzywa / Owoce</option><option value="⚙️|INNE">⚙️ Inne</option></select></div></div><div class="mbtns"><button class="btn" onclick="pantryAddManualSave()">💾 Dodaj</button><button class="btn out" onclick="modalClose()">Anuluj</button></div>');
+}
+
+function pantryAddManualSave(){
+const name=document.getElementById('pmName').value.trim();
+const amt=parseFloat(document.getElementById('pmAmt').value);
+const unit=document.getElementById('pmUnit').value;
+const catVal=document.getElementById('pmCat').value.split('|');
+if(!name){toast('Wpisz nazwę',false);return}
+if(isNaN(amt)||amt<=0){toast('Wpisz ilość',false);return}
+pantryAdd(name,amt,unit,catVal[1],catVal[0]);
+modalClose();toast(name+' dodane ✓');vib(HAP.done);
+}
+
+// Load all checked items from current shopping week into pantry
+function pantryFromShop(){
+pantryInit();
+const wk=S.shopWk;
+const shop=SHOPPING[wk];
+let added=0;
+shop.forEach((cat,ci)=>{
+cat.items.forEach((item,ii)=>{
+const ik='w'+wk+'-'+ci+'-'+ii;
+if(!S.shopChk||!S.shopChk[ik])return; // not checked
+const raw=item.a.trim();
+if(raw.startsWith('('))return;
+const parsed=parseShopAmt(raw);
+if(!parsed)return;
+// Check if already in pantry from this exact shop check
+const flagKey='pantry-loaded-'+ik;
+if(S[flagKey])return;
+pantryAdd(item.n,parsed.amt,parsed.unit,cat.n,cat.i);
+S[flagKey]=true;
+added++;
+});
+});
+save();renPantry();
+if(added>0){toast(added+' produktów dodanych ✓');vib(HAP.done)}
+else{toast('Brak nowych zaznaczonych produktów',false)}
+}
+
+function parseShopAmt(raw){
+const m=raw.match(/^([\d.,]+)\s*(.*)/);
+if(!m)return null;
+const amt=parseFloat(m[1].replace(',','.'));
+let unit=m[2].trim().toLowerCase();
+if(unit.includes('kg'))unit='kg';
+else if(unit.includes('opakow'))unit='opakowań';
+else if(unit.includes('szt'))unit='szt';
+else if(unit.includes('ml'))unit='ml';
+else if(unit==='l'||unit.includes('litr'))unit='L';
+else if(unit.includes('g'))unit='g';
+else unit='szt';
+return {amt,unit};
+}
+
+function renPantry(){
+pantryInit();
+const el=document.getElementById('pantryList');
+if(!el)return;
+
+// Stats
+let total=0,low=0,empty=0;
+S.pantry.forEach(p=>{
+total++;
+if(p.amt===0)empty++;
+else if(p.amt<0.2&&(p.unit==='kg'||p.unit==='L'))low++;
+else if(p.amt<=1&&p.unit==='szt')low++;
+else if(p.amt<100&&p.unit==='g')low++;
+});
+const pt=document.getElementById('pTotal');if(pt)pt.textContent=total;
+const pl=document.getElementById('pLow');if(pl)pl.textContent=low;
+const pe=document.getElementById('pEmpty');if(pe)pe.textContent=empty;
+
+if(!S.pantry.length){el.innerHTML='<div style="color:var(--t3);text-align:center;padding:20px;font-size:.88em">Spiżarnia pusta. Dodaj produkty z zakupów lub ręcznie.</div>';return}
+
+// Group by category
+const cats={};
+S.pantry.forEach(p=>{
+const ck=p.cat||'Inne';
+if(!cats[ck])cats[ck]={icon:p.catIcon||'⚙️',items:[]};
+cats[ck].items.push(p);
+});
+
+let h='';
+const catOrder=['BIAŁKO','WĘGLE','WARZYWA / OWOCE','WARZYWA','INNE'];
+const sortedCats=Object.keys(cats).sort((a,b)=>{
+const ai=catOrder.findIndex(c=>a.toUpperCase().includes(c));
+const bi=catOrder.findIndex(c=>b.toUpperCase().includes(c));
+return (ai<0?99:ai)-(bi<0?99:bi);
+});
+
+sortedCats.forEach(ck=>{
+const cat=cats[ck];
+h+='<div class="pantry-cat-hdr">'+cat.icon+' '+ck+'</div>';
+cat.items.forEach(p=>{
+let cls='';
+if(p.amt===0)cls='empty';
+else if((p.unit==='kg'||p.unit==='L')&&p.amt<0.2)cls='low';
+else if(p.unit==='szt'&&p.amt<=1)cls='low';
+else if(p.unit==='g'&&p.amt<100)cls='low';
+else if(p.unit==='opakowań'&&p.amt<=1)cls='low';
+
+let dispAmt=p.amt;
+if(p.unit==='kg'||p.unit==='L')dispAmt=Math.round(p.amt*100)/100;
+else dispAmt=Math.round(p.amt*10)/10;
+if(dispAmt===Math.floor(dispAmt))dispAmt=Math.floor(dispAmt);
+
+h+='<div class="pantry-item '+cls+'">';
+h+='<div><div class="pi-name">'+p.name+'</div><div class="pi-cat">'+p.cat+'</div></div>';
+h+='<div class="pi-amt">'+dispAmt+' '+p.unit+'</div>';
+h+='<div class="pi-btns">';
+h+='<button class="pi-btn" onclick="pantryEdit('+p.id+')" title="Edytuj">✏️</button>';
+h+='<button class="pi-btn del" onclick="pantryRemove('+p.id+')" title="Usuń">🗑️</button>';
+h+='</div></div>';
+});
+});
+
+el.innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════
 // HAPTIC PATTERNS
 // ═══════════════════════════════════════════════════════
 const HAP={
@@ -1476,71 +1971,106 @@ function sgGenerate(){
 const keys=Object.keys(sgSelected).filter(k=>sgSelected[k]);
 if(!keys.length){toast('Zaznacz min. 1 dzień',false);return}
 
-// Parse all ingredients
-const items={};
+// Group selected days by week
+const perWeek={};
 keys.forEach(k=>{
-const [wk,di]=k.split('-').map(Number);
-const day=WEEKS[wk][di];
-day.meals.forEach(m=>{
-if(!m.ing)return;
-m.ing.split('·').forEach(part=>{
-part=part.trim();
-if(!part||part.startsWith('+')||part.startsWith('supl'))return;
-// Parse "400g pierś surowa" or "5ml olej" or "2 jajka"
-const match=part.match(/^(\d+(?:[.,]\d+)?)\s*(g|kg|ml|szt|kaps|łyż)?\s*(.+)/i);
-if(match){
-const amt=parseFloat(match[1].replace(',','.'));
-const unit=(match[2]||'szt').toLowerCase();
-let name=match[3].trim().toLowerCase();
-// Normalize names
-name=name.replace(/\s*(mrożone|mrożony|mrożona|surowa|surowy|gotowana|gotowany)\s*/g,' ').trim();
-name=name.replace(/\s+/g,' ');
-const nk=name+'|'+unit;
-if(!items[nk])items[nk]={name,unit,amt:0,count:0};
-items[nk].amt+=amt;items[nk].count++;
-}else{
-// No amount found, just list it
-const nk=part.toLowerCase()+'|szt';
-if(!items[nk])items[nk]={name:part.toLowerCase(),unit:'szt',amt:1,count:0};
-items[nk].count++;
+const wk=parseInt(k.split('-')[0]);
+if(!perWeek[wk])perWeek[wk]=0;
+perWeek[wk]++;
+});
+
+// For each week, scale SHOPPING items by (selected_days / 7)
+const merged={};  // key: "cat_idx-item_idx" or normalized name → {name, amount_text, price, cat_icon, cat_name}
+
+Object.keys(perWeek).forEach(wk=>{
+const wi=parseInt(wk);
+const ratio=perWeek[wi]/7;
+const shop=SHOPPING[wi];
+if(!shop)return;
+
+shop.forEach((cat,ci)=>{
+cat.items.forEach((item,ii)=>{
+// Parse amount from string like "2.4 kg", "8 opakowań", "18 szt", "500g", "1L", "7 szt", "(masz)"
+const raw=item.a.trim();
+if(raw.startsWith('('))return; // skip "(masz)" items
+
+const mk=wi+'-'+ci+'-'+ii;
+const numMatch=raw.match(/^([\d.,]+)\s*(.*)/);
+
+if(numMatch){
+const baseAmt=parseFloat(numMatch[1].replace(',','.'));
+const unit=numMatch[2].trim()||'szt';
+const scaled=baseAmt*ratio;
+const price=item.p*ratio;
+
+// Try to merge same product across weeks
+const normName=item.n.toLowerCase().replace(/\s*\(.*?\)\s*/g,'').trim();
+const mergeKey=normName+'|'+unit;
+
+if(!merged[mergeKey]){
+merged[mergeKey]={
+name:item.n,
+amt:0,
+unit:unit,
+price:0,
+catIcon:cat.i,
+catName:cat.n,
+catOrder:ci
+};
+}
+merged[mergeKey].amt+=scaled;
+merged[mergeKey].price+=price;
 }
 });
 });
 });
 
-// Sort by category heuristic
-const sorted=Object.values(items).sort((a,b)=>{
-const cat=n=>{
-if(/pierś|serca|wątróbka|kurczak|jaj|białk/.test(n))return 0;
-if(/twaróg|mleko|jogurt|śmietan/.test(n))return 1;
-if(/ryż|kasza|makaron|płatki|bulgur|kuskus|ziemniak|spaghetti/.test(n))return 2;
-if(/brokul|szpinak|marchew|cebul|ogórek|sałat|warzyw|kalafior|cukinia|pomidor|groszek|fasolka|pieczark/.test(n))return 3;
-if(/banan|owoc|cytry/.test(n))return 4;
-return 5;
-};
-return cat(a.name)-cat(b.name);
-});
+// Sort by category order
+const sorted=Object.values(merged).sort((a,b)=>a.catOrder-b.catOrder);
 
-const catNames=['🔴 Białko','🧀 Nabiał','🟡 Węgle','🟢 Warzywa','🍌 Owoce','⚙️ Inne'];
-let curCat=-1;
-let h=`<div style="margin-top:10px;font-size:.78em;color:var(--t3)">${keys.length} dni zaznaczonych — ${sorted.length} produktów</div>`;
+// Render
+let curCat='';
+let totalPrice=0;
+let h='<div style="margin-top:10px;font-size:.78em;color:var(--t3)">';
+const weekList=Object.keys(perWeek).map(w=>'T'+(parseInt(w)+1)+': '+perWeek[w]+' dni').join(', ');
+h+=weekList+'</div>';
 
 sorted.forEach(it=>{
-const cat=(/pierś|serca|wątróbka|kurczak|jaj|białk/.test(it.name))?0:
-(/twaróg|mleko|jogurt|śmietan/.test(it.name))?1:
-(/ryż|kasza|makaron|płatki|bulgur|kuskus|ziemniak|spaghetti/.test(it.name))?2:
-(/brokul|szpinak|marchew|cebul|ogórek|sałat|warzyw|kalafior|cukinia|pomidor|groszek|fasolka|pieczark/.test(it.name))?3:
-(/banan|owoc|cytry/.test(it.name))?4:5;
-if(cat!==curCat){curCat=cat;h+=`<div style="color:var(--or);font-weight:700;font-size:.82em;margin-top:10px;padding-top:6px;border-top:1px solid var(--brd)">${catNames[cat]}</div>`}
+const catLabel=it.catIcon+' '+it.catName;
+if(catLabel!==curCat){
+curCat=catLabel;
+h+='<div style="color:var(--or);font-weight:700;font-size:.82em;margin-top:10px;padding-top:6px;border-top:1px solid var(--brd)">'+catLabel+'</div>';
+}
 
-let display=it.amt;let unit=it.unit;
-// Convert g to kg
-if(unit==='g'&&display>=1000){display=Math.round(display/100)/10;unit='kg'}
-else{display=Math.round(display)}
+// Format amount nicely
+let display='';
+const amt=it.amt;
+const u=it.unit.toLowerCase();
 
-const name=it.name.charAt(0).toUpperCase()+it.name.slice(1);
-h+=`<div class="sg-item"><span class="sg-n">${name}</span><span class="sg-a">${display}${unit}</span></div>`;
+if(u.includes('kg')){
+display=amt<1?(Math.round(amt*1000)+'g'):(Math.round(amt*10)/10+' kg');
+}else if(u.includes('opakow')){
+display=Math.ceil(amt)+' opakowań';
+}else if(u==='szt'||u.includes('szt')){
+display=Math.ceil(amt)+' szt';
+}else if(u.includes('g')&&!u.includes('kg')){
+const total=amt;
+display=total>=1000?(Math.round(total/100)/10+' kg'):(Math.round(total)+'g');
+}else if(u.includes('l')&&!u.includes('ml')){
+display=Math.round(amt*10)/10+'L';
+}else if(u.includes('ml')){
+display=Math.round(amt)+'ml';
+}else{
+display=Math.round(amt*10)/10+' '+it.unit;
+}
+
+const price=Math.round(it.price);
+totalPrice+=it.price;
+
+h+='<div class="sg-item"><span class="sg-n">'+it.name+'</span><span class="sg-a">'+display+'</span><span class="sp">~'+price+' zł</span></div>';
 });
+
+h+='<div class="stot" style="margin-top:10px"><span>SZACOWANY KOSZT:</span><span class="v">~'+Math.round(totalPrice)+' zł</span></div>';
 
 document.getElementById('sgResult').innerHTML=h;
 vib(HAP.done);toast('Lista gotowa ✓');
@@ -1554,8 +2084,11 @@ let text='🛒 Lista zakupów (Diet Master V7)\n\n';
 items.forEach(it=>{
 const n=it.querySelector('.sg-n')?.textContent||'';
 const a=it.querySelector('.sg-a')?.textContent||'';
-text+=`☐ ${n} — ${a}\n`;
+const p=it.querySelector('.sp')?.textContent||'';
+text+='☐ '+n+' — '+a+(p?' ('+p+')':'')+'\n';
 });
+const tot=el.querySelector('.stot .v');
+if(tot)text+='\n💰 '+tot.textContent+'\n';
 if(navigator.share){
 try{await navigator.share({title:'Lista zakupów',text});toast('Udostępniono ✓')}catch(e){}
 }else{
@@ -2063,7 +2596,7 @@ if(!S.notifSent)S.notifSent={};
 if(!S.scanHist)S.scanHist=[];
 document.getElementById('dIn').value=new Date().toISOString().split('T')[0];
 loadTheme();initPWA();initNotif();initOffline();initShake();awUpdate();
-updDash();renPlan();renShop();renWaga();renWat();renSupp();renPsmf();renPrep();updCompliance();renScanHist();sgInit();
+updDash();renPlan();renShop();renWaga();renWat();renSupp();renPsmf();renPrep();updCompliance();renScanHist();sgInit();renPantry();
 updBadge();checkPersist();updPwaStatus();
 initPhotoDB().then(()=>photoRender()).catch(()=>{});
 }
