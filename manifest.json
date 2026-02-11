@@ -7,6 +7,7 @@
   "orientation": "portrait",
   "background_color": "#06090f",
   "theme_color": "#ff6b2b",
+  "categories": ["health", "fitness", "food"],
   "icons": [
     {
       "src": "icon-192.png",
@@ -19,6 +20,33 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "share_target": {
+    "action": "./index.html",
+    "method": "GET",
+    "params": {
+      "text": "shared_text"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Dodaj wodę",
+      "short_name": "Woda",
+      "url": "./index.html#woda",
+      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Zapisz wagę",
+      "short_name": "Waga",
+      "url": "./index.html#waga",
+      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Suplementy",
+      "short_name": "Supl",
+      "url": "./index.html#supp",
+      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
     }
   ]
 }

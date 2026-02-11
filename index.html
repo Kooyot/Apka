@@ -9,6 +9,7 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>DIET MASTER V7 — ULTRA</title>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 :root{
@@ -48,11 +49,56 @@ nav.on{transform:translateX(0)}
 
 /* MAIN */
 main{padding:72px 14px 40px;max-width:880px;margin:0 auto}
-.sec{display:none;animation:fi .25s ease}.sec.on{display:block}
-@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.sec{display:none;animation:secIn .35s cubic-bezier(.22,.61,.36,1)}.sec.on{display:block}
+@keyframes secIn{0%{opacity:0;transform:translateY(16px) scale(.98)}100%{opacity:1;transform:translateY(0) scale(1)}}
 
-/* CARDS */
-.c{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--rad);padding:16px;margin-bottom:14px}
+/* NAV ICONS */
+.nbtn .ni{display:inline-flex;width:20px;height:20px;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle}
+.nbtn .ni svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nbtn.on .ni svg{stroke:#fff}
+
+/* CARD HOVER */
+.c{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--rad);padding:16px;margin-bottom:14px;transition:border-color .25s,box-shadow .25s}
+.c:hover{border-color:var(--brd2);box-shadow:0 4px 24px rgba(255,107,43,.06)}
+
+/* QA RIPPLE */
+.qa{position:relative;overflow:hidden}
+.qa::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--x,50%) var(--y,50%),rgba(255,107,43,.15) 0%,transparent 60%);opacity:0;transition:opacity .4s}
+.qa:active::after{opacity:1}
+
+/* BTN RIPPLE */
+.btn{position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.btn:active::after{transform:scaleX(1)}
+
+/* SMOOTH MEAL CARD ENTER */
+.mc{transition:opacity .2s,transform .2s}
+
+/* PILL PRESS */
+.pill{transition:all .15s cubic-bezier(.22,.61,.36,1)}
+.pill:active{transform:scale(.92)}
+
+/* PROGRESS RING GLOW */
+.pring svg{transition:filter .5s}
+
+/* SHOPPING GENERATOR */
+.shopgen{background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad2);padding:14px;margin-top:14px}
+.shopgen h3{color:var(--or);font-size:.9em;margin-bottom:10px}
+.sg-days{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.sg-day{padding:6px 12px;border:2px solid var(--brd);border-radius:var(--rad3);font-size:.78em;font-weight:600;cursor:pointer;transition:.2s;background:var(--bg3);color:var(--t2)}
+.sg-day:hover{border-color:var(--or)}
+.sg-day.sel{background:var(--or-g);border-color:var(--or);color:var(--or)}
+.sg-result{margin-top:12px}
+.sg-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--brd);font-size:.82em}
+.sg-item:last-child{border-bottom:none}
+.sg-item .sg-n{flex:1;color:var(--t1)}.sg-item .sg-a{color:var(--gr);font-weight:600;font-family:'JetBrains Mono',monospace}
+
+/* TOAST UPGRADE */
+.toast{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+
+/* NAV SMOOTH */
+nav{transition:transform .35s cubic-bezier(.22,.61,.36,1)}
+.overlay{transition:opacity .35s}
 .ch{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--brd)}.ch h2{font-size:1em;font-weight:700;color:var(--or);flex:1}.ch .ico{width:32px;height:32px;background:var(--or-g);border-radius:var(--rad3);display:flex;align-items:center;justify-content:center;font-size:1em;flex-shrink:0}
 
 /* GRIDS */
@@ -254,13 +300,59 @@ table.gen td{color:var(--t2)}
 .pwa-bar{background:var(--or-g);border:1px solid var(--brd2);border-radius:var(--rad3);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:.82em;display:none}
 .pwa-bar button{padding:5px 12px;border-radius:16px;border:none;background:var(--or);color:#fff;font-weight:600;cursor:pointer;font-size:.8em}
 
+/* OFFLINE BAR */
+.offline-bar{position:fixed;top:56px;left:0;right:0;background:var(--rd);color:#fff;text-align:center;padding:6px;font-size:.78em;font-weight:700;z-index:97;transform:translateY(-100%);transition:.3s}
+.offline-bar.on{transform:translateY(0)}
+
+/* SCANNER */
+#scanReader{width:100%;max-width:400px;margin:0 auto;border-radius:var(--rad2);overflow:hidden}
+#scanReader video{border-radius:var(--rad2)}
+.scan-result{background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad2);padding:14px;margin-top:12px}
+.scan-result .sr-name{font-weight:700;font-size:1.05em;color:var(--or);margin-bottom:8px}
+.scan-result .sr-brand{font-size:.82em;color:var(--t2);margin-bottom:8px}
+.scan-macro{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.scan-macro .sm{background:var(--bg3);border-radius:var(--rad3);padding:8px 4px;text-align:center}
+.scan-macro .sm .v{font-size:1.2em;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--or)}
+.scan-macro .sm .l{font-size:.6em;color:var(--t3);text-transform:uppercase}
+.scan-hist{margin-top:12px;max-height:300px;overflow-y:auto}
+.scan-hi{display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--rad3);margin-bottom:4px;font-size:.82em;cursor:pointer;transition:.2s}
+.scan-hi:hover{border-color:var(--or)}
+.scan-hi .sh-n{flex:1;font-weight:600}.scan-hi .sh-k{color:var(--or);font-family:'JetBrains Mono',monospace}
+
+/* PHOTO DIARY */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.photo-card{position:relative;border-radius:var(--rad3);overflow:hidden;aspect-ratio:1;background:var(--bg4);border:1px solid var(--brd)}
+.photo-card img{width:100%;height:100%;object-fit:cover}
+.photo-card .pc-info{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:4px 6px;font-size:.6em;color:#fff}
+.photo-card .pc-del{position:absolute;top:4px;right:4px;background:var(--rd);border:none;color:#fff;width:20px;height:20px;border-radius:50%;font-size:.65em;cursor:pointer;opacity:0;transition:.2s}
+.photo-card:hover .pc-del{opacity:1}
+#photoCapture{display:none}
+
+/* FULLSCREEN TIMER */
+.fs-timer{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center}
+.fs-timer.on{display:flex}
+.fs-timer .fs-time{font-family:'JetBrains Mono',monospace;font-size:min(25vw,120px);font-weight:800;color:var(--or);text-shadow:0 0 60px rgba(255,107,43,.4)}
+.fs-timer .fs-lbl{font-size:1.2em;color:var(--t2);margin-bottom:20px}
+.fs-timer .fs-btns{display:flex;gap:12px}
+
+/* THEME TOGGLE */
+body.light{--bg:#f5f5f5;--bg2:#fff;--bg3:#f0f0f0;--bg4:#e8e8e8;--bg5:#ddd;--t1:#111;--t2:#555;--t3:#888;--brd:rgba(0,0,0,.1);--brd2:rgba(255,107,43,.3)}
+.theme-btn{width:36px;height:36px;border-radius:var(--rad3);border:1px solid var(--brd);background:var(--bg3);color:var(--t2);font-size:1em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0}
+.theme-btn:active{transform:scale(.9)}
+
+/* SHAKE HINT */
+.shake-hint{font-size:.7em;color:var(--t3);text-align:center;margin-top:6px;opacity:.6}
+
 @media(max-width:600px){
 main{padding:64px 8px 28px}.hbadge{display:none}header{padding:0 8px;gap:6px}
+.photo-grid{grid-template-columns:repeat(2,1fr)}
+.scan-macro{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 <body>
 <svg width="0" height="0"><defs><linearGradient id="og" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ff6b2b"/><stop offset="100%" stop-color="#ff8f5e"/></linearGradient></defs></svg>
+<div class="offline-bar" id="offBar">📡 Brak internetu — tryb offline</div>
 <div class="toast" id="toast"><span id="tIco"></span><span id="tMsg"></span></div>
 <div class="overlay" id="ov" onclick="navC()"></div>
 <header>
@@ -268,22 +360,26 @@ main{padding:64px 8px 28px}.hbadge{display:none}header{padding:0 8px;gap:6px}
 <div class="htitle"><h1>DIET MASTER V7</h1><span>~303 zł/tyg • T<span id="hWk">1</span></span></div>
 <div class="hbadge">💧 <b id="hw">0</b>L</div>
 <div class="hbadge">⚖️ <b id="hwt">100.0</b>kg</div>
+<button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
 </header>
 <nav id="nav">
 <div class="nlbl">Główne</div>
-<button class="nbtn on" data-s="dash"><span>📊</span> Dashboard</button>
-<button class="nbtn" data-s="plan"><span>🍽️</span> Jadłospis</button>
-<button class="nbtn" data-s="shop"><span>🛒</span> Zakupy</button>
-<button class="nbtn" data-s="waga"><span>⚖️</span> Waga</button>
+<button class="nbtn on" data-s="dash"><span class="ni"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Dashboard</button>
+<button class="nbtn" data-s="plan"><span class="ni"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/><circle cx="20" cy="18" r="2"/></svg></span>Jadłospis</button>
+<button class="nbtn" data-s="shop"><span class="ni"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></span>Zakupy</button>
+<button class="nbtn" data-s="waga"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 014 4H8a4 4 0 014-4z"/><path d="M5 7h14l-1 14H6L5 7z"/></svg></span>Waga</button>
 <div class="nlbl">Narzędzia</div>
-<button class="nbtn" data-s="woda"><span>💧</span> Nawodnienie</button>
-<button class="nbtn" data-s="supp"><span>💊</span> Suplementy</button>
-<button class="nbtn" data-s="psmf"><span>⚡</span> Protokół PSMF</button>
-<button class="nbtn" data-s="prep"><span>🍳</span> Meal Prep</button>
-<button class="nbtn" data-s="timer"><span>⏱️</span> Timer</button>
+<button class="nbtn" data-s="woda"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 2L5 10c-1.5 2-2 4-2 6a9 9 0 0018 0c0-2-.5-4-2-6L12 2z"/></svg></span>Nawodnienie</button>
+<button class="nbtn" data-s="supp"><span class="ni"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="4"/><line x1="6" y1="10" x2="18" y2="10"/></svg></span>Suplementy</button>
+<button class="nbtn" data-s="psmf"><span class="ni"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg></span>Protokół PSMF</button>
+<button class="nbtn" data-s="prep"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12h20C22 6.5 17.5 2 12 2z"/><path d="M2 14h20v2a4 4 0 01-4 4H6a4 4 0 01-4-4v-2z"/></svg></span>Meal Prep</button>
+<button class="nbtn" data-s="timer"><span class="ni"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/><path d="M12 2v2"/></svg></span>Timer</button>
+<button class="nbtn" data-s="scan"><span class="ni"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="8" x2="7" y2="16"/><line x1="11" y1="8" x2="11" y2="16"/><line x1="15" y1="8" x2="15" y2="16"/></svg></span>Skaner EAN</button>
+<button class="nbtn" data-s="photos"><span class="ni"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M8 5l1-2h6l1 2"/></svg></span>Foto Posiłków</button>
 <div class="nlbl">Dane</div>
-<button class="nbtn" data-s="blood"><span>🩸</span> Wyniki Krwi</button>
-<button class="nbtn" data-s="zabka"><span>🏪</span> Plan B — Żabka</button>
+<button class="nbtn" data-s="blood"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 2L7 10c-1 1.5-2 3.5-2 5.5A7 7 0 0019 15.5c0-2-1-4-2-5.5L12 2z"/><path d="M9 15a3 3 0 003 3"/></svg></span>Wyniki Krwi</button>
+<button class="nbtn" data-s="zabka"><span class="ni"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 3v18"/></svg></span>Plan B — Żabka</button>
+<button class="nbtn" data-s="dataio"><span class="ni"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>Backup / Eksport</button>
 </nav>
 <main>
 
@@ -343,6 +439,24 @@ main{padding:64px 8px 28px}.hbadge{display:none}header{padding:0 8px;gap:6px}
 <div class="wsel" id="shopWeekSel"></div>
 <div id="shopC"></div>
 <div class="stot"><span>RAZEM:</span><span class="v" id="shopTot">— zł</span></div>
+<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn out" onclick="findStore('Biedronka')">📍 Najbliższa Biedronka</button>
+<button class="btn out" onclick="findStore('Lidl')">📍 Najbliższy Lidl</button>
+</div>
+<div class="shopgen">
+<h3>🛠️ Generator listy — wybierz dni</h3>
+<div class="al info" style="margin:0 0 10px"><strong>Zaznacz dni</strong> z dowolnych tygodni → wygeneruję listę składników.</div>
+<div style="margin-bottom:8px">
+<div style="display:flex;gap:4px;margin-bottom:6px" id="sgWeekBtns"></div>
+<div class="sg-days" id="sgDays"></div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn" onclick="sgGenerate()">📋 Generuj listę</button>
+<button class="btn out" onclick="sgClear()">🔄 Wyczyść</button>
+<button class="btn gr" onclick="sgShare()">📤 Udostępnij</button>
+</div>
+<div class="sg-result" id="sgResult"></div>
+</div>
 </div></section>
 
 <!-- WAGA -->
@@ -362,6 +476,7 @@ main{padding:64px 8px 28px}.hbadge{display:none}header{padding:0 8px;gap:6px}
 <div style="font-size:2em;font-weight:800;color:var(--cy);font-family:'JetBrains Mono',monospace"><span id="wCur">0</span> ml</div>
 <div style="color:var(--t3);margin:3px 0 14px">Cel: <strong>5000 ml</strong> (<span id="wPct">0</span>%)</div>
 <div class="wbtns"><button class="wbtn" onclick="watA(250)">+250</button><button class="wbtn" onclick="watA(500)">+500</button><button class="wbtn" onclick="watA(750)">+750</button><button class="wbtn" onclick="watA(1000)">+1L</button><button class="wbtn min" onclick="watA(-250)">-250</button></div>
+<div class="shake-hint" id="shakeHint">📳 Potrząśnij telefonem → +250ml</div>
 </div>
 <div class="al cyn" style="margin-top:14px"><strong>💧 Harmonogram:</strong><br>• 04:00 — Z shake (200ml)<br>• 06:00-15:00 — Min 3L w pracy (yerba wliczona, ostatnia o 13:00)<br>• 10:00 — Elektrolity 500ml (SHAKER!)<br>• 16:00 — Przed/w trakcie posiłku<br>• 21:00 — MSM + Glicyna 5g shot 300ml<br>• Cel dzienny: 5L+<br>• 💡 Banan (80g) codziennie w shake = potas na uzupełnienie elektrolitów</div>
 </div></section>
@@ -405,9 +520,49 @@ main{padding:64px 8px 28px}.hbadge{display:none}header{padding:0 8px;gap:6px}
 <div style="text-align:center;padding:16px 0">
 <div class="tdisp" id="tmDisp">00:00</div>
 <div style="color:var(--t3);margin-bottom:14px" id="tmLbl">Wybierz preset</div>
-<div style="display:flex;justify-content:center;gap:8px"><button class="btn" id="tmBtn" onclick="tmTog()">▶️ Start</button><button class="btn out" onclick="tmRst()">🔄</button></div>
+<div style="display:flex;justify-content:center;gap:8px"><button class="btn" id="tmBtn" onclick="tmTog()">▶️ Start</button><button class="btn out" onclick="tmRst()">🔄</button><button class="btn cy" onclick="tmFullscreen()">⛶ Fullscreen</button></div>
 <div class="tpreset"><button class="tpb" onclick="tmSet(1)">1 min</button><button class="tpb" onclick="tmSet(3)">3 min</button><button class="tpb" onclick="tmSet(5)">5 min</button><button class="tpb" onclick="tmSet(8)">8 min jajka</button><button class="tpb" onclick="tmSet(10)">10 min kasza</button><button class="tpb" onclick="tmSet(12)">12 min ryż</button><button class="tpb" onclick="tmSet(15)">15 min jaglana</button><button class="tpb" onclick="tmSet(20)">20 min kurczak</button><button class="tpb" onclick="tmSet(40)">40 min żołądki</button></div>
 </div></div></section>
+
+<!-- SCANNER -->
+<section id="scan" class="sec">
+<div class="c"><div class="ch"><div class="ico">📷</div><h2>Skaner Kodów EAN</h2></div>
+<div class="al info"><strong>📡 Wymaga internetu.</strong> Skanuj kod kreskowy → makra z Open Food Facts.</div>
+<div style="text-align:center;margin-bottom:12px">
+<button class="btn" id="scanStartBtn" onclick="scanStart()">📷 Uruchom kamerę</button>
+<button class="btn rd" id="scanStopBtn" onclick="scanStop()" style="display:none">⏹️ Zatrzymaj</button>
+</div>
+<div id="scanReader"></div>
+<div id="scanResult"></div>
+<div class="ig" style="margin-top:12px"><label>Lub wpisz kod ręcznie:</label>
+<div class="fr"><input type="text" id="eanInput" placeholder="np. 5900512345678" inputmode="numeric"><button class="btn sm" onclick="eanLookup(document.getElementById('eanInput').value)">🔍</button></div>
+</div>
+<h3 style="color:var(--or);margin:16px 0 8px;font-size:.9em">📜 Historia skanów</h3>
+<div class="scan-hist" id="scanHist"></div>
+</div></section>
+
+<!-- FOTO POSIŁKÓW -->
+<section id="photos" class="sec">
+<div class="c"><div class="ch"><div class="ico">📸</div><h2>Foto Dziennik</h2><button class="btn sm out" onclick="photoClear()">🗑️</button></div>
+<div class="al info"><strong>📸 Zrób zdjęcie posiłku</strong> — wizualny dziennik. Zdjęcia zapisywane lokalnie w IndexedDB.</div>
+<div style="text-align:center;margin-bottom:12px">
+<button class="btn" onclick="photoTake()">📷 Zrób zdjęcie</button>
+<input type="file" id="photoCapture" accept="image/*" capture="environment" onchange="photoProcess(event)">
+</div>
+<div style="margin-bottom:8px;color:var(--t3);font-size:.82em;text-align:center" id="photoCount">—</div>
+<div class="photo-grid" id="photoGrid"></div>
+</div></section>
+
+<!-- FULLSCREEN TIMER OVERLAY -->
+<div class="fs-timer" id="fsTimer">
+<div class="fs-lbl" id="fsLbl">Timer</div>
+<div class="fs-time" id="fsTime">00:00</div>
+<div class="fs-btns">
+<button class="btn" id="fsTmBtn" onclick="tmTog();updFsTimer()">▶️ Start</button>
+<button class="btn out" onclick="tmRst();updFsTimer()">🔄</button>
+<button class="btn rd" onclick="fsClose()">✕ Zamknij</button>
+</div>
+</div>
 
 <!-- BLOOD RESULTS -->
 <section id="blood" class="sec">
@@ -474,6 +629,33 @@ main{padding:64px 8px 28px}.hbadge{display:none}header{padding:0 8px;gap:6px}
 <div class="mc"><div class="mn">Gotowe danie + twaróg</div>
 <div class="mi">• Pierś grillowana z lady (Biedronka deli) ~200g — ~44g B<br>• Twaróg 0% 250g — ~42g B<br>• Sałata w torebce — ~20 kcal<br>Razem: ~580 kcal | ~86g B</div></div>
 <div class="al info" style="margin-top:12px"><strong>Zasada:</strong> Gdy nie możesz gotować → twaróg 0% + najbardziej czyste białko jakie znajdziesz. Unikaj gotowych sosów, panierki, fast-foodu.</div>
+</div></section>
+
+<!-- BACKUP / EKSPORT -->
+<section id="dataio" class="sec">
+<div class="c"><div class="ch"><div class="ico">💾</div><h2>Backup & Dane</h2></div>
+<div class="al info"><strong>📱 Twoje dane żyją w localStorage.</strong> Zrób backup żeby nie stracić przy czyszczeniu przeglądarki.</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+<button class="btn" onclick="dataExport()">📤 Eksportuj JSON</button>
+<button class="btn out" onclick="document.getElementById('impFile').click()">📥 Importuj JSON</button>
+<input type="file" id="impFile" accept=".json" style="display:none" onchange="dataImport(event)">
+<button class="btn rd" onclick="dataClear()">🗑️ Wyczyść dane</button>
+</div>
+<div class="al warn"><strong>⚠️ Import nadpisze aktualne dane.</strong> Zrób eksport najpierw.</div>
+<div style="margin-top:14px">
+<h3 style="color:var(--or);font-size:.9em;margin-bottom:8px">📊 Udostępnij postęp</h3>
+<button class="btn gr" onclick="shareProgress()">📤 Udostępnij postęp</button>
+<span style="font-size:.75em;color:var(--t3);margin-left:8px">Wyśle podsumowanie przez Share API</span>
+</div>
+<div style="margin-top:14px">
+<h3 style="color:var(--or);font-size:.9em;margin-bottom:8px">🔒 Magazyn trwały</h3>
+<button class="btn cy" onclick="reqPersist()">Proś o trwały storage</button>
+<span style="font-size:.75em;color:var(--t3);margin-left:8px" id="persistSt">—</span>
+</div>
+<div style="margin-top:14px">
+<h3 style="color:var(--or);font-size:.9em;margin-bottom:8px">📱 Status PWA</h3>
+<div id="pwaStatus" style="font-size:.82em;color:var(--t2)">Ładowanie...</div>
+</div>
 </div></section>
 
 <!-- AUTO-WEEK CONFIG -->
@@ -961,7 +1143,7 @@ function toast(m,ok=true){const t=document.getElementById('toast');t.className='
 // ═══════════════════════════════════════════════════════
 function navT(){document.getElementById('nav').classList.toggle('on');document.getElementById('ov').classList.toggle('on');const b=document.getElementById('mbtn');b.classList.toggle('x');b.textContent=b.classList.contains('x')?'✕':'☰'}
 function navC(){document.getElementById('nav').classList.remove('on');document.getElementById('ov').classList.remove('on');const b=document.getElementById('mbtn');b.classList.remove('x');b.textContent='☰'}
-function go(id){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');document.querySelectorAll('.nbtn').forEach(b=>{b.classList.toggle('on',b.dataset.s===id)});navC()}
+function go(id){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');document.querySelectorAll('.nbtn').forEach(b=>{b.classList.toggle('on',b.dataset.s===id)});navC();vib(HAP.nav)}
 document.querySelectorAll('.nbtn').forEach(b=>b.addEventListener('click',()=>go(b.dataset.s)));
 
 // ═══════════════════════════════════════════════════════
@@ -1019,7 +1201,7 @@ c+=`<div class="mc ${m.cls}"><div class="mt">${m.time} | ${m.name}</div>
 <div class="mm"><span class="mbdg kc">${SCALE>1?Math.round(m.kcal*SCALE):m.kcal} kcal</span><span class="mbdg bp">${SCALE>1?Math.round(m.b*SCALE):m.b}g B</span>${m.w?`<span class="mbdg wg">${SCALE>1?Math.round(m.w*SCALE):m.w}g W</span>`:''}<span class="mbdg tl">${SCALE>1?Math.round(m.t*SCALE):m.t}g T</span></div>
 <div class="mi">${scaledIng.replace(/\n/g,'<br>')}</div>
 ${m.recipe?`<details style="margin-top:6px"><summary style="color:var(--or);cursor:pointer;font-size:.82em;font-weight:600">📖 Przepis</summary>
-<div style="margin-top:5px;font-size:.82em;color:var(--t2);padding:6px;background:var(--bg3);border-radius:6px">${m.recipe}</div></details>`:''}</div>`;});
+<div style="margin-top:5px;font-size:.82em;color:var(--t2);padding:6px;background:var(--bg3);border-radius:6px">${m.recipe}<br><button class="btn sm out" style="margin-top:6px" onclick="event.stopPropagation();speakRecipe('${m.name.replace(/'/g,"\\'")} — ${m.recipe.replace(/'/g,"\\'")}')">🔊 Czytaj na głos</button></div></details>`:''}</div>`;});
 c+=`<div class="msbar"><div class="i"><div class="l">Kcal</div><div class="v">${d.kcal}</div></div><div class="i"><div class="l">Białko</div><div class="v">${d.b}g</div></div><div class="i"><div class="l">Węgle</div><div class="v">${d.w}g</div></div><div class="i"><div class="l">Tłuszcz</div><div class="v">${d.t}g</div></div></div>`;
 document.getElementById('dayC').innerHTML=c;
 }
@@ -1079,7 +1261,7 @@ const gY=p.t+gH*(1-(82-mn)/(mx-mn));if(gY>p.t&&gY<H-p.b){ctx.setLineDash([3,3]);
 // WODA
 // ═══════════════════════════════════════════════════════
 function watA(ml){const td=new Date().toDateString();if(S.waterDate!==td){S.water=0;S.waterDate=td}
-S.water=Math.max(0,S.water+ml);save();renWat();updDash();toast(ml>0?`+${ml}ml`:`${ml}ml`)}
+S.water=Math.max(0,S.water+ml);save();renWat();updDash();vib(ml>0?HAP.add:HAP.remove);toast(ml>0?`+${ml}ml`:`${ml}ml`)}
 function watRst(){S.water=0;save();renWat();updDash();toast('Reset')}
 function renWat(){document.getElementById('wCur').textContent=S.water;const pct=Math.min(100,Math.round(S.water/5000*100));document.getElementById('wPct').textContent=pct;document.getElementById('wLvl').style.height=pct+'%'}
 
@@ -1091,7 +1273,7 @@ h+=`<div class="spblk"><div class="hd"><span class="tm">${s.t}</span><span class
 s.items.forEach(it=>{const k=`${td}-${s.t}-${it}`;const tk=S.suppTk[k];
 h+=`<div class="pill ${tk?'tk':''}" onclick="suppTog('${k}')">${it}</div>`});
 h+=`</div></div>`});document.getElementById('suppC').innerHTML=h}
-function suppTog(k){S.suppTk[k]=!S.suppTk[k];save();renSupp();toast(S.suppTk[k]?'✓':'Odznaczono')}
+function suppTog(k){S.suppTk[k]=!S.suppTk[k];save();renSupp();vib(HAP.done);toast(S.suppTk[k]?'✓':'Odznaczono')}
 function suppRst(){const td=new Date().toDateString();Object.keys(S.suppTk).forEach(k=>{if(k.startsWith(td))delete S.suppTk[k]});save();renSupp();toast('Reset')}
 
 // ═══════════════════════════════════════════════════════
@@ -1121,9 +1303,10 @@ document.getElementById('prepC').innerHTML=h;
 // ═══════════════════════════════════════════════════════
 let TM={s:0,run:false,int:null};
 function tmSet(m){TM.s=m*60;tmUpd();document.getElementById('tmLbl').textContent=m+' min'}
-function tmTog(){if(TM.run){clearInterval(TM.int);TM.run=false;document.getElementById('tmBtn').textContent='▶️ Start'}else{if(TM.s<=0)return;TM.run=true;document.getElementById('tmBtn').textContent='⏸️ Pauza';TM.int=setInterval(()=>{TM.s--;tmUpd();if(TM.s<=0){clearInterval(TM.int);TM.run=false;document.getElementById('tmBtn').textContent='▶️ Start';try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator();const g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;o.type='sine';g.gain.value=.2;o.start();setTimeout(()=>o.stop(),500)}catch(e){}toast('⏰ CZAS!')}},1000)}}
-function tmRst(){clearInterval(TM.int);TM.run=false;TM.s=0;tmUpd();document.getElementById('tmBtn').textContent='▶️ Start';document.getElementById('tmLbl').textContent='Wybierz preset'}
-function tmUpd(){const m=Math.floor(TM.s/60),s=TM.s%60;document.getElementById('tmDisp').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function tmTog(){if(TM.run){clearInterval(TM.int);TM.run=false;document.getElementById('tmBtn').textContent='▶️ Start';relWakeLock()}else{if(TM.s<=0)return;TM.run=true;reqWakeLock();document.getElementById('tmBtn').textContent='⏸️ Pauza';TM.int=setInterval(()=>{TM.s--;tmUpd();if(TM.s<=0){clearInterval(TM.int);TM.run=false;document.getElementById('tmBtn').textContent='▶️ Start';relWakeLock();vib(HAP.timer);try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator();const g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;o.type='sine';g.gain.value=.2;o.start();setTimeout(()=>o.stop(),500)}catch(e){}if('Notification' in window&&Notification.permission==='granted'){try{new Notification('Diet Master V7',{body:'⏰ Timer skończony!',tag:'dm-timer'})}catch(e){}}toast('⏰ CZAS!')}},1000)}}
+function tmRst(){clearInterval(TM.int);TM.run=false;TM.s=0;tmUpd();relWakeLock();document.getElementById('tmBtn').textContent='▶️ Start';document.getElementById('tmLbl').textContent='Wybierz preset'}
+function tmUpd(){const m=Math.floor(TM.s/60),s=TM.s%60;const t=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');document.getElementById('tmDisp').textContent=t;
+const fs=document.getElementById('fsTime');if(fs)fs.textContent=t}
 
 
 
@@ -1140,6 +1323,7 @@ if(!S.mealChk)S.mealChk={};
 S.mealChk[k]=!S.mealChk[k];
 save();updDash();renPlan();updCompliance();
 toast(S.mealChk[k]?'Posiłek ✓':'Odznaczono');
+vib(S.mealChk[k]?HAP.done:HAP.remove);updBadge();
 }
 function isMealDone(mi){
 const k=mealKey(0)+'-'+mi;
@@ -1253,13 +1437,573 @@ return scaled+u;
 // ═══════════════════════════════════════════════════════
 // PWA
 // ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// HAPTIC PATTERNS
+// ═══════════════════════════════════════════════════════
+const HAP={
+tap:[15],
+done:[30,30,50],
+add:[20,15,20],
+remove:[10,10,10],
+warn:[50,50,50,50,100],
+timer:[200,100,200,100,400],
+scan:[80],
+shake:[40,40,80],
+nav:[10]
+};
+
+// ═══════════════════════════════════════════════════════
+// CUSTOM SHOPPING LIST GENERATOR
+// ═══════════════════════════════════════════════════════
+let sgSelWk=0;
+let sgSelected={}; // key: 'wk-day' → bool
+
+function sgInit(){
+let wh='';for(let i=0;i<4;i++)wh+=`<div class="ws ${sgSelWk===i?'on':''}" onclick="sgSetWk(${i})" style="font-size:.75em;padding:6px">T${i+1}</div>`;
+document.getElementById('sgWeekBtns').innerHTML=wh;
+const dayNames=['PON','WTO','ŚRO','CZW','PIĄ','SOB','NIE'];
+let dh='';WEEKS[sgSelWk].forEach((d,i)=>{
+const k=sgSelWk+'-'+i;const sel=sgSelected[k];
+dh+=`<div class="sg-day ${sel?'sel':''}" onclick="sgTogDay('${k}')">${d.n}<br><span style="font-size:.65em;opacity:.6">${d.bdgT}</span></div>`;
+});
+document.getElementById('sgDays').innerHTML=dh;
+}
+function sgSetWk(w){sgSelWk=w;sgInit()}
+function sgTogDay(k){sgSelected[k]=!sgSelected[k];vib(HAP.tap);sgInit()}
+function sgClear(){sgSelected={};sgInit();document.getElementById('sgResult').innerHTML='';vib(HAP.remove)}
+
+function sgGenerate(){
+const keys=Object.keys(sgSelected).filter(k=>sgSelected[k]);
+if(!keys.length){toast('Zaznacz min. 1 dzień',false);return}
+
+// Parse all ingredients
+const items={};
+keys.forEach(k=>{
+const [wk,di]=k.split('-').map(Number);
+const day=WEEKS[wk][di];
+day.meals.forEach(m=>{
+if(!m.ing)return;
+m.ing.split('·').forEach(part=>{
+part=part.trim();
+if(!part||part.startsWith('+')||part.startsWith('supl'))return;
+// Parse "400g pierś surowa" or "5ml olej" or "2 jajka"
+const match=part.match(/^(\d+(?:[.,]\d+)?)\s*(g|kg|ml|szt|kaps|łyż)?\s*(.+)/i);
+if(match){
+const amt=parseFloat(match[1].replace(',','.'));
+const unit=(match[2]||'szt').toLowerCase();
+let name=match[3].trim().toLowerCase();
+// Normalize names
+name=name.replace(/\s*(mrożone|mrożony|mrożona|surowa|surowy|gotowana|gotowany)\s*/g,' ').trim();
+name=name.replace(/\s+/g,' ');
+const nk=name+'|'+unit;
+if(!items[nk])items[nk]={name,unit,amt:0,count:0};
+items[nk].amt+=amt;items[nk].count++;
+}else{
+// No amount found, just list it
+const nk=part.toLowerCase()+'|szt';
+if(!items[nk])items[nk]={name:part.toLowerCase(),unit:'szt',amt:1,count:0};
+items[nk].count++;
+}
+});
+});
+});
+
+// Sort by category heuristic
+const sorted=Object.values(items).sort((a,b)=>{
+const cat=n=>{
+if(/pierś|serca|wątróbka|kurczak|jaj|białk/.test(n))return 0;
+if(/twaróg|mleko|jogurt|śmietan/.test(n))return 1;
+if(/ryż|kasza|makaron|płatki|bulgur|kuskus|ziemniak|spaghetti/.test(n))return 2;
+if(/brokul|szpinak|marchew|cebul|ogórek|sałat|warzyw|kalafior|cukinia|pomidor|groszek|fasolka|pieczark/.test(n))return 3;
+if(/banan|owoc|cytry/.test(n))return 4;
+return 5;
+};
+return cat(a.name)-cat(b.name);
+});
+
+const catNames=['🔴 Białko','🧀 Nabiał','🟡 Węgle','🟢 Warzywa','🍌 Owoce','⚙️ Inne'];
+let curCat=-1;
+let h=`<div style="margin-top:10px;font-size:.78em;color:var(--t3)">${keys.length} dni zaznaczonych — ${sorted.length} produktów</div>`;
+
+sorted.forEach(it=>{
+const cat=(/pierś|serca|wątróbka|kurczak|jaj|białk/.test(it.name))?0:
+(/twaróg|mleko|jogurt|śmietan/.test(it.name))?1:
+(/ryż|kasza|makaron|płatki|bulgur|kuskus|ziemniak|spaghetti/.test(it.name))?2:
+(/brokul|szpinak|marchew|cebul|ogórek|sałat|warzyw|kalafior|cukinia|pomidor|groszek|fasolka|pieczark/.test(it.name))?3:
+(/banan|owoc|cytry/.test(it.name))?4:5;
+if(cat!==curCat){curCat=cat;h+=`<div style="color:var(--or);font-weight:700;font-size:.82em;margin-top:10px;padding-top:6px;border-top:1px solid var(--brd)">${catNames[cat]}</div>`}
+
+let display=it.amt;let unit=it.unit;
+// Convert g to kg
+if(unit==='g'&&display>=1000){display=Math.round(display/100)/10;unit='kg'}
+else{display=Math.round(display)}
+
+const name=it.name.charAt(0).toUpperCase()+it.name.slice(1);
+h+=`<div class="sg-item"><span class="sg-n">${name}</span><span class="sg-a">${display}${unit}</span></div>`;
+});
+
+document.getElementById('sgResult').innerHTML=h;
+vib(HAP.done);toast('Lista gotowa ✓');
+}
+
+async function sgShare(){
+const el=document.getElementById('sgResult');
+if(!el||!el.textContent.trim()){toast('Najpierw generuj listę',false);return}
+const items=el.querySelectorAll('.sg-item');
+let text='🛒 Lista zakupów (Diet Master V7)\n\n';
+items.forEach(it=>{
+const n=it.querySelector('.sg-n')?.textContent||'';
+const a=it.querySelector('.sg-a')?.textContent||'';
+text+=`☐ ${n} — ${a}\n`;
+});
+if(navigator.share){
+try{await navigator.share({title:'Lista zakupów',text});toast('Udostępniono ✓')}catch(e){}
+}else{
+navigator.clipboard.writeText(text).then(()=>toast('Skopiowano ✓')).catch(()=>{});
+}
+}
+
+// ═══════════════════════════════════════════════════════
+// BARCODE SCANNER (html5-qrcode + Open Food Facts)
+// ═══════════════════════════════════════════════════════
+let scanner=null;
+function scanStart(){
+if(!window.Html5Qrcode){toast('Ładuję skaner...',false);
+const s=document.createElement('script');s.src='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+s.onload=()=>scanStart();document.head.appendChild(s);return}
+if(scanner)scanStop();
+scanner=new Html5Qrcode('scanReader');
+scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:150},
+formatsToSupport:[0]}, // EAN_13
+code=>{vib(HAP.scan);scanStop();eanLookup(code)},
+()=>{}
+).then(()=>{
+document.getElementById('scanStartBtn').style.display='none';
+document.getElementById('scanStopBtn').style.display='';
+}).catch(e=>toast('Kamera: '+e,false));
+}
+function scanStop(){
+if(scanner){try{scanner.stop().then(()=>{scanner.clear()}).catch(()=>{})}catch(e){}}
+scanner=null;
+document.getElementById('scanStartBtn').style.display='';
+document.getElementById('scanStopBtn').style.display='none';
+}
+async function eanLookup(code){
+code=code.trim();if(!code||code.length<8){toast('Za krótki kod',false);return}
+document.getElementById('scanResult').innerHTML='<div class="al info">⏳ Szukam produktu...</div>';
+try{
+const r=await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}.json`);
+const d=await r.json();
+if(d.status===1){
+const p=d.product;const n100=p.nutriments||{};
+const res={
+ean:code,
+name:p.product_name||p.product_name_pl||'Nieznany',
+brand:p.brands||'',
+img:p.image_front_small_url||'',
+kcal:Math.round(n100['energy-kcal_100g']||0),
+b:+(n100.proteins_100g||0).toFixed(1),
+w:+(n100.carbohydrates_100g||0).toFixed(1),
+t:+(n100.fat_100g||0).toFixed(1),
+fiber:+(n100.fiber_100g||0).toFixed(1),
+serving:p.serving_size||'100g',
+ts:Date.now()
+};
+renderScanResult(res);
+saveScanHist(res);
+}else{
+document.getElementById('scanResult').innerHTML='<div class="al warn">❌ Produkt nie znaleziony w Open Food Facts</div>';
+}
+}catch(e){
+document.getElementById('scanResult').innerHTML='<div class="al err">❌ Brak internetu lub błąd API</div>';
+}
+}
+function renderScanResult(r){
+document.getElementById('scanResult').innerHTML=`
+<div class="scan-result">
+${r.img?`<img src="${r.img}" style="width:60px;height:60px;border-radius:8px;float:right;margin-left:8px;object-fit:cover">`:''}
+<div class="sr-name">${r.name}</div>
+<div class="sr-brand">${r.brand} · EAN: ${r.ean}</div>
+<div style="font-size:.75em;color:var(--t3)">Wartości na 100g${r.serving!=='100g'?' · Porcja: '+r.serving:''}</div>
+<div class="scan-macro">
+<div class="sm"><div class="v">${r.kcal}</div><div class="l">Kcal</div></div>
+<div class="sm"><div class="v" style="color:var(--bl)">${r.b}g</div><div class="l">Białko</div></div>
+<div class="sm"><div class="v" style="color:var(--yl)">${r.w}g</div><div class="l">Węgle</div></div>
+<div class="sm"><div class="v" style="color:var(--pr)">${r.t}g</div><div class="l">Tłuszcz</div></div>
+</div>
+${r.fiber?`<div style="margin-top:6px;font-size:.78em;color:var(--t2)">🌱 Błonnik: ${r.fiber}g/100g</div>`:''}
+</div>`;
+}
+function saveScanHist(r){
+if(!S.scanHist)S.scanHist=[];
+S.scanHist=S.scanHist.filter(x=>x.ean!==r.ean);
+S.scanHist.unshift(r);
+if(S.scanHist.length>50)S.scanHist=S.scanHist.slice(0,50);
+save();renScanHist();
+}
+function renScanHist(){
+if(!S.scanHist||!S.scanHist.length){document.getElementById('scanHist').innerHTML='<div style="color:var(--t3);font-size:.82em;text-align:center">Brak skanów</div>';return}
+let h='';S.scanHist.forEach(r=>{
+h+=`<div class="scan-hi" onclick="renderScanResult(${JSON.stringify(r).replace(/"/g,'&quot;')})">
+<span class="sh-n">${r.name}</span><span class="sh-k">${r.kcal} kcal</span></div>`;
+});
+document.getElementById('scanHist').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════
+// PHOTO DIARY (Camera + IndexedDB)
+// ═══════════════════════════════════════════════════════
+let photoDB=null;
+function initPhotoDB(){
+return new Promise((res,rej)=>{
+const req=indexedDB.open('dmv7photos',1);
+req.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains('photos'))db.createObjectStore('photos',{keyPath:'id',autoIncrement:true})};
+req.onsuccess=e=>{photoDB=e.target.result;res()};
+req.onerror=()=>rej();
+});
+}
+function photoTake(){document.getElementById('photoCapture').click()}
+function photoProcess(e){
+const file=e.target.files[0];if(!file)return;
+const reader=new FileReader();
+reader.onload=function(ev){
+const img=new Image();
+img.onload=function(){
+const max=800;let w=img.width,h=img.height;
+if(w>max){h=h*max/w;w=max}
+if(h>max){w=w*max/h;h=max}
+const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+const ctx=cv.getContext('2d');ctx.drawImage(img,0,0,w,h);
+const data=cv.toDataURL('image/jpeg',0.7);
+photoStore(data);
+};
+img.src=ev.target.result;
+};
+reader.readAsDataURL(file);
+e.target.value='';
+}
+function photoStore(data){
+if(!photoDB){toast('DB error',false);return}
+const tx=photoDB.transaction('photos','readwrite');
+const st=tx.objectStore('photos');
+st.add({data,date:new Date().toISOString(),label:''});
+tx.oncomplete=()=>{toast('📸 Zdjęcie zapisane ✓');vib(HAP.done);photoRender()};
+}
+function photoRender(){
+if(!photoDB)return;
+const tx=photoDB.transaction('photos','readonly');
+const st=tx.objectStore('photos');
+const req=st.getAll();
+req.onsuccess=()=>{
+const photos=req.result.reverse();
+document.getElementById('photoCount').textContent=photos.length+' zdjęć';
+if(!photos.length){document.getElementById('photoGrid').innerHTML='<div style="color:var(--t3);font-size:.82em;text-align:center;grid-column:1/-1;padding:20px">Brak zdjęć. Zrób pierwsze!</div>';return}
+let h='';photos.forEach(p=>{
+const d=new Date(p.date);
+const dt=d.toLocaleDateString('pl-PL',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+h+=`<div class="photo-card"><img src="${p.data}" loading="lazy"><div class="pc-info">${dt}</div><button class="pc-del" onclick="event.stopPropagation();photoDel(${p.id})">✕</button></div>`;
+});
+document.getElementById('photoGrid').innerHTML=h;
+};
+}
+function photoDel(id){
+if(!photoDB)return;
+const tx=photoDB.transaction('photos','readwrite');
+tx.objectStore('photos').delete(id);
+tx.oncomplete=()=>{toast('Usunięto');photoRender()};
+}
+function photoClear(){
+if(!confirm('Usunąć WSZYSTKIE zdjęcia?'))return;
+if(!photoDB)return;
+const tx=photoDB.transaction('photos','readwrite');
+tx.objectStore('photos').clear();
+tx.oncomplete=()=>{toast('Zdjęcia usunięte');photoRender()};
+}
+
+// ═══════════════════════════════════════════════════════
+// GEOLOCATION — znajdź sklep
+// ═══════════════════════════════════════════════════════
+function findStore(name){
+if(!navigator.geolocation){toast('Brak GPS',false);return}
+toast('📍 Szukam lokalizacji...');
+navigator.geolocation.getCurrentPosition(
+pos=>{const{latitude:lat,longitude:lng}=pos.coords;
+window.open(`https://www.google.com/maps/search/${encodeURIComponent(name)}/@${lat},${lng},14z`,'_blank')},
+err=>{toast('GPS odmówiony: '+err.message,false)},
+{enableHighAccuracy:false,timeout:8000}
+);
+}
+
+// ═══════════════════════════════════════════════════════
+// OFFLINE INDICATOR
+// ═══════════════════════════════════════════════════════
+function initOffline(){
+const bar=document.getElementById('offBar');
+function upd(){bar.classList.toggle('on',!navigator.onLine)}
+window.addEventListener('online',()=>{upd();toast('🌐 Online')});
+window.addEventListener('offline',()=>{upd();toast('📡 Offline',false)});
+upd();
+}
+
+// ═══════════════════════════════════════════════════════
+// FULLSCREEN TIMER
+// ═══════════════════════════════════════════════════════
+let fsInterval=null;
+function tmFullscreen(){
+const el=document.getElementById('fsTimer');
+el.classList.add('on');
+try{el.requestFullscreen&&el.requestFullscreen()}catch(e){}
+updFsTimer();
+if(fsInterval)clearInterval(fsInterval);
+fsInterval=setInterval(updFsTimer,250);
+}
+function fsClose(){
+const el=document.getElementById('fsTimer');
+el.classList.remove('on');
+try{document.exitFullscreen&&document.exitFullscreen()}catch(e){}
+if(fsInterval){clearInterval(fsInterval);fsInterval=null}
+}
+function updFsTimer(){
+const m=Math.floor(TM.s/60),s=TM.s%60;
+const t=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+document.getElementById('fsTime').textContent=t;
+document.getElementById('fsLbl').textContent=document.getElementById('tmLbl').textContent;
+document.getElementById('fsTmBtn').textContent=TM.run?'⏸️ Pauza':'▶️ Start';
+if(TM.s<=0&&!TM.run&&fsInterval){/* timer done, keep screen */}
+}
+
+// ═══════════════════════════════════════════════════════
+// SHAKE TO ADD WATER (DeviceMotion)
+// ═══════════════════════════════════════════════════════
+let shakeReady=true;let lastShake=0;
+function initShake(){
+if(!('DeviceMotionEvent' in window)){
+const h=document.getElementById('shakeHint');if(h)h.style.display='none';return}
+// iOS 13+ requires permission
+if(typeof DeviceMotionEvent.requestPermission==='function'){
+document.getElementById('shakeHint').innerHTML='📳 <a href="#" onclick="reqShakePerm();return false" style="color:var(--cy)">Kliknij aby włączyć shake</a>';
+}else{
+window.addEventListener('devicemotion',handleShake);
+}
+}
+function reqShakePerm(){
+DeviceMotionEvent.requestPermission().then(p=>{
+if(p==='granted'){window.addEventListener('devicemotion',handleShake);
+document.getElementById('shakeHint').textContent='📳 Potrząśnij telefonem → +250ml';toast('Shake włączony ✓')}
+}).catch(()=>{});
+}
+function handleShake(e){
+const a=e.accelerationIncludingGravity;if(!a)return;
+const force=Math.abs(a.x)+Math.abs(a.y)+Math.abs(a.z);
+const now=Date.now();
+if(force>35&&shakeReady&&now-lastShake>2000){
+lastShake=now;shakeReady=false;
+// Only trigger if water section is visible
+const ws=document.getElementById('woda');
+if(ws&&ws.classList.contains('on')){watA(250)}
+setTimeout(()=>{shakeReady=true},2000);
+}
+}
+
+// ═══════════════════════════════════════════════════════
+// THEME TOGGLE (dark/light)
+// ═══════════════════════════════════════════════════════
+function toggleTheme(){
+const isLight=document.body.classList.toggle('light');
+S.theme=isLight?'light':'dark';save();
+document.getElementById('themeBtn').textContent=isLight?'☀️':'🌙';
+document.querySelector('meta[name="theme-color"]').content=isLight?'#f5f5f5':'#ff6b2b';
+toast(isLight?'Tryb jasny':'Tryb ciemny');
+}
+function loadTheme(){
+if(S.theme==='light'){document.body.classList.add('light');
+document.getElementById('themeBtn').textContent='☀️';
+document.querySelector('meta[name="theme-color"]').content='#f5f5f5'}
+}
+
+// ═══════════════════════════════════════════════════════
+// WEB SPEECH — czytaj przepis na głos
+// ═══════════════════════════════════════════════════════
+let currentSpeech=null;
+function speakRecipe(text){
+if(!('speechSynthesis' in window)){toast('Brak wsparcia mowy',false);return}
+if(speechSynthesis.speaking){speechSynthesis.cancel();toast('Zatrzymano');return}
+const u=new SpeechSynthesisUtterance(text);
+u.lang='pl-PL';u.rate=0.9;u.pitch=1;
+const voices=speechSynthesis.getVoices();
+const plVoice=voices.find(v=>v.lang.startsWith('pl'));
+if(plVoice)u.voice=plVoice;
+u.onend=()=>toast('🔊 Koniec');
+speechSynthesis.speak(u);
+toast('🔊 Czytam przepis...');
+}
+
+// ═══════════════════════════════════════════════════════
+// WAKE LOCK API — ekran nie gaśnie podczas timera
+// ═══════════════════════════════════════════════════════
+let wakeLock=null;
+async function reqWakeLock(){
+try{if('wakeLock' in navigator){wakeLock=await navigator.wakeLock.request('screen');
+wakeLock.addEventListener('release',()=>{wakeLock=null})}}catch(e){}}
+function relWakeLock(){if(wakeLock){wakeLock.release();wakeLock=null}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&TM.run)reqWakeLock()});
+
+// ═══════════════════════════════════════════════════════
+// VIBRATION API — wibracja przy timerze i meal check
+// ═══════════════════════════════════════════════════════
+function vib(pattern){try{if('vibrate' in navigator)navigator.vibrate(pattern)}catch(e){}}
+
+// ═══════════════════════════════════════════════════════
+// BADGING API — licznik niezjedzonych posiłków na ikonie
+// ═══════════════════════════════════════════════════════
+function updBadge(){
+try{
+if(!('setAppBadge' in navigator))return;
+const {done,total}=todayMealsDone();
+const left=total-done;
+if(left>0)navigator.setAppBadge(left);
+else navigator.clearAppBadge();
+}catch(e){}}
+
+// ═══════════════════════════════════════════════════════
+// WEB SHARE API — udostępnij postęp
+// ═══════════════════════════════════════════════════════
+async function shareProgress(){
+const wk=getCurWk();const di=getCurDi();const d=WEEKS[wk][di];
+const {done,total}=todayMealsDone();
+const lastW=S.w.length?S.w[S.w.length-1].w:100;
+const lost=Math.max(0,100-lastW).toFixed(1);
+const water=(S.water/1000).toFixed(1);
+
+const text=`🔥 Diet Master V7 — Dzień ${['PON','WTO','ŚRO','CZW','PIĄ','SOB','NIE'][di]} (T${wk+1})
+⚖️ Waga: ${lastW} kg (${lost} kg stracone)
+🍽️ Posiłki: ${done}/${total}
+💧 Woda: ${water}L / 5L
+📊 Cel: ${d.kcal} kcal | ${d.b}g białka
+💪 Cel wagowy: 82 kg (zostało ${Math.max(0,lastW-82).toFixed(1)} kg)`;
+
+if(navigator.share){
+try{await navigator.share({title:'Diet Master V7 — Postęp',text});toast('Udostępniono ✓')}
+catch(e){if(e.name!=='AbortError')fallbackCopy(text)}}
+else fallbackCopy(text);
+}
+function fallbackCopy(text){
+navigator.clipboard.writeText(text).then(()=>toast('Skopiowano do schowka ✓')).catch(()=>toast('Brak wsparcia',false));
+}
+
+// ═══════════════════════════════════════════════════════
+// DATA EXPORT / IMPORT
+// ═══════════════════════════════════════════════════════
+function dataExport(){
+const data=JSON.stringify(S,null,2);
+const blob=new Blob([data],{type:'application/json'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');
+a.href=url;
+const dt=new Date().toISOString().split('T')[0];
+a.download=`diet-master-v7-backup-${dt}.json`;
+a.click();URL.revokeObjectURL(url);
+toast('Backup pobrany ✓');
+}
+function dataImport(e){
+const file=e.target.files[0];if(!file)return;
+const reader=new FileReader();
+reader.onload=function(ev){
+try{
+const data=JSON.parse(ev.target.result);
+if(!confirm('⚠️ Na pewno nadpisać dane? Stracisz obecne.'))return;
+S=data;save();
+init();toast('Dane zaimportowane ✓');
+}catch(err){toast('Błąd pliku JSON',false)}
+};reader.readAsText(file);
+e.target.value='';
+}
+function dataClear(){
+if(!confirm('⚠️ USUNĄĆ WSZYSTKIE DANE? Tej operacji nie cofniesz!'))return;
+if(!confirm('Na pewno? Waga, woda, suplementy — wszystko zniknie.'))return;
+localStorage.removeItem(LS);S={};load();save();
+init();toast('Dane usunięte');
+}
+
+// ═══════════════════════════════════════════════════════
+// PERSISTENT STORAGE — poproś o trwały storage
+// ═══════════════════════════════════════════════════════
+async function reqPersist(){
+if(!navigator.storage||!navigator.storage.persist){
+document.getElementById('persistSt').textContent='Brak wsparcia';return}
+const ok=await navigator.storage.persist();
+document.getElementById('persistSt').textContent=ok?'✅ Trwały — dane nie zostaną usunięte':'❌ Odmówiono';
+toast(ok?'Storage trwały ✓':'Odmówiono',ok);
+}
+async function checkPersist(){
+if(!navigator.storage||!navigator.storage.persisted)return;
+const p=await navigator.storage.persisted();
+const el=document.getElementById('persistSt');
+if(el)el.textContent=p?'✅ Trwały':'⚠️ Nietrwały — dane mogą zniknąć';
+}
+
+// ═══════════════════════════════════════════════════════
+// PWA STATUS — pokaż co działa
+// ═══════════════════════════════════════════════════════
+function updPwaStatus(){
+const el=document.getElementById('pwaStatus');if(!el)return;
+const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+const sw='serviceWorker' in navigator;
+const notif='Notification' in window;
+const share='share' in navigator;
+const badge='setAppBadge' in navigator;
+const wake='wakeLock' in navigator;
+const vibr='vibrate' in navigator;
+const persist=navigator.storage&&navigator.storage.persist;
+const cam=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+const geo='geolocation' in navigator;
+const speech='speechSynthesis' in window;
+const motion='DeviceMotionEvent' in window;
+const idb='indexedDB' in window;
+const fscr=document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen;
+function ck(ok,name){var col=ok?"var(--gr)":"var(--rd)";var ico=ok?"✅":"❌";return "<span style='color:"+col+"'>"+ico+" "+name+"</span>"}
+el.innerHTML=[
+ck(standalone,'Tryb standalone'),
+ck(sw,'Service Worker (offline)'),
+ck(notif,'Powiadomienia'),
+ck(share,'Web Share API'),
+ck(badge,'Badging API (ikona)'),
+ck(wake,'Wake Lock (timer)'),
+ck(vibr,'Wibracja'),
+ck(persist,'Persistent Storage'),
+ck(cam,'Kamera (skaner/zdjęcia)'),
+ck(geo,'Geolokalizacja (sklepy)'),
+ck(speech,'Web Speech (czytanie)'),
+ck(motion,'DeviceMotion (shake)'),
+ck(idb,'IndexedDB (zdjęcia)'),
+ck(fscr,'Fullscreen API (timer)')
+].join('<br>');
+}
+
 let deferredPrompt=null;
 function initPWA(){
 if('serviceWorker' in navigator){
 navigator.serviceWorker.register('./sw.js').catch(e=>console.log('SW fail:',e));
+// Listen for updates from SW
+navigator.serviceWorker.addEventListener('message',e=>{
+if(e.data.type==='UPDATE_READY')toast('🔄 Nowa wersja! Odśwież.');
+if(e.data.type==='UPDATE_BADGE')updBadge();
+});
 }
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;
 document.getElementById('pwaBar').style.display='flex';});
+// Handle shortcuts via hash
+if(location.hash){const sec=location.hash.slice(1);if(document.getElementById(sec))setTimeout(()=>go(sec),100);}
+// Handle shared text
+const params=new URLSearchParams(location.search);
+const shared=params.get('shared_text');
+if(shared)setTimeout(()=>{toast('Otrzymano: '+shared.slice(0,30));},500);
+// Periodic sync for badge
+if('serviceWorker' in navigator){
+navigator.serviceWorker.ready.then(reg=>{
+if(reg.periodicSync)reg.periodicSync.register('update-badge',{minInterval:3600000}).catch(()=>{});
+}).catch(()=>{});
+}
 }
 function pwaInstall(){
 if(deferredPrompt){deferredPrompt.prompt();
@@ -1316,9 +2060,12 @@ function init(){
 load();
 if(!S.mealChk)S.mealChk={};
 if(!S.notifSent)S.notifSent={};
+if(!S.scanHist)S.scanHist=[];
 document.getElementById('dIn').value=new Date().toISOString().split('T')[0];
-initPWA();initNotif();awUpdate();
-updDash();renPlan();renShop();renWaga();renWat();renSupp();renPsmf();renPrep();updCompliance();
+loadTheme();initPWA();initNotif();initOffline();initShake();awUpdate();
+updDash();renPlan();renShop();renWaga();renWat();renSupp();renPsmf();renPrep();updCompliance();renScanHist();sgInit();
+updBadge();checkPersist();updPwaStatus();
+initPhotoDB().then(()=>photoRender()).catch(()=>{});
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
