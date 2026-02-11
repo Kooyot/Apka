@@ -2593,16 +2593,17 @@ const r=await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}.json
 const d=await r.json();
 if(d.status===1){
 const p=d.product;const n100=p.nutriments||{};
+const pm=parseNut(n100);
 const res={
 ean:code,
 name:p.product_name||p.product_name_pl||'Nieznany',
 brand:p.brands||'',
 img:p.image_front_small_url||'',
-kcal:Math.round(n100['energy-kcal_100g']||0),
-b:+(n100.proteins_100g||0).toFixed(1),
-w:+(n100.carbohydrates_100g||0).toFixed(1),
-t:+(n100.fat_100g||0).toFixed(1),
-fiber:+(n100.fiber_100g||0).toFixed(1),
+kcal:pm.kcal,
+b:pm.b,
+w:pm.w,
+t:pm.t,
+fiber:+(n100.fiber_100g||n100.fiber||0).toFixed(1),
 serving:p.serving_size||'100g',
 ts:Date.now()
 };
@@ -3297,10 +3298,9 @@ var d=await r.json();
 if(d.products&&d.products.length){
 var h='';d.products.forEach(function(p){
 var n=p.nutriments||{};
-var kcal=Math.round(n['energy-kcal_100g']||0);
-var b=+(n.proteins_100g||0).toFixed(1);
-var w=+(n.carbohydrates_100g||0).toFixed(1);
-var t=+(n.fat_100g||0).toFixed(1);
+var m=parseNut(n);
+var kcal=m.kcal,b=m.b,w=m.w,t=m.t;
+if(!kcal&&!b&&!w&&!t)return;
 var nm=(p.product_name||'?').substring(0,40);
 h+='<div class="calc-prod" onclick="edSearchAdd(\''+nm.replace(/'/g,"\\\'")+'\','+kcal+','+b+','+w+','+t+')"><span class="cp-name">'+nm+'</span><span class="cp-macro">'+kcal+'/'+b+'B/'+w+'W/'+t+'T</span></div>';
 });
@@ -3617,10 +3617,9 @@ var d=await r.json();
 if(d.products&&d.products.length){
 var h='';d.products.forEach(function(p){
 var n=p.nutriments||{};
-var kcal=Math.round(n['energy-kcal_100g']||0);
-var b=+(n.proteins_100g||0).toFixed(1);
-var w=+(n.carbohydrates_100g||0).toFixed(1);
-var t=+(n.fat_100g||0).toFixed(1);
+var m=parseNut(n);
+var kcal=m.kcal,b=m.b,w=m.w,t=m.t;
+if(!kcal&&!b&&!w&&!t)return; // skip products with no nutritional data
 var nm=(p.product_name||'?').substring(0,45);
 var brand=p.brands||'';
 var img=p.image_front_small_url||'';
@@ -3738,6 +3737,21 @@ var key=perm?'p-w'+wk+'-d'+di+'-m'+mi:'t-'+mealKey(0)+'-w'+wk+'-d'+di+'-m'+mi;
 S.mealOverrides[key]={name:name,ing:parts.join(' \u00b7 '),kcal:totK,b:totB,w:totW,t:totT,recipe:''};
 save();modalClose();_calcBasket=[];renderCalcBasket();renPlan();updDash();renPantry();
 toast('Zapisano \u2713');vib(HAP.done);
+}
+
+// Parse nutriments with fallbacks for incomplete Open Food Facts data
+function parseNut(n){
+if(!n)return{kcal:0,b:0,w:0,t:0};
+// kcal: try energy-kcal_100g, then energy_100g (kJ) / 4.184
+var kcal=n['energy-kcal_100g']||n['energy-kcal']||0;
+if(!kcal&&(n['energy_100g']||n['energy_value'])){kcal=Math.round((n['energy_100g']||n['energy_value'])/4.184)}
+// protein: try multiple keys
+var b=n['proteins_100g']||n['proteins']||n['proteins_value']||0;
+// carbs
+var w=n['carbohydrates_100g']||n['carbohydrates']||n['carbohydrates_value']||0;
+// fat
+var t=n['fat_100g']||n['fat']||n['fat_value']||0;
+return{kcal:Math.round(+kcal||0),b:+(+b||0).toFixed(1),w:+(+w||0).toFixed(1),t:+(+t||0).toFixed(1)};
 }
 
 function calcShowAddCustom(){
