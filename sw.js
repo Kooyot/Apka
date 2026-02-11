@@ -1,4 +1,4 @@
-const VERSION = 'dmv7-v5';
+const VERSION = 'dmv7-v7.1';
 const ASSETS = [
   './',
   './index.html',
