@@ -3292,21 +3292,38 @@ async function edSearchRun(){
 var q=document.getElementById('edSearchQ').value.trim();
 if(!q){toast('Wpisz nazw\u0119',false);return}
 document.getElementById('edSearchRes').innerHTML='<div class="al info">\u23f3 Szukam...</div>';
+var qLow=dePolish(q.toLowerCase());
+var localH='';
+Object.entries(PROD_DB).forEach(function(e){
+var name=e[0],m=e[1];
+if(dePolish(name.toLowerCase()).includes(qLow)||qLow.includes(dePolish(name.toLowerCase()).substring(0,4))){
+localH+='<div class="calc-prod" onclick="edSearchAdd(\''+name.replace(/'/g,"\\'")+'\','+m.kcal+','+m.b+','+m.w+','+m.t+')"><span class="cp-name">'+name+' <span style="color:var(--gr);font-size:.7em">\u2705</span></span><span class="cp-macro">'+m.kcal+'/'+m.b+'B/'+m.w+'W/'+m.t+'T</span></div>';
+}});
+(S.customProducts||[]).forEach(function(cp){
+if(dePolish(cp.name.toLowerCase()).includes(qLow)||qLow.includes(dePolish(cp.name.toLowerCase()).substring(0,4))){
+localH+='<div class="calc-prod" onclick="edSearchAdd(\''+cp.name.replace(/'/g,"\\'")+'\','+cp.kcal+','+cp.b+','+cp.w+','+cp.t+')"><span class="cp-name">'+cp.name+' <span style="color:var(--cy);font-size:.7em">\u2605</span></span><span class="cp-macro">'+cp.kcal+'/'+cp.b+'B/'+cp.w+'W/'+cp.t+'T</span></div>';
+}});
 try{
-var r=await fetch('https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&json=1&page_size=10&fields=product_name,brands,nutriments,code');
+var r=await fetch('https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&json=1&page_size=10&fields=product_name,brands,nutriments,code&lc=pl&tagtype_0=states&tag_contains_0=contains&tag_0=en:nutrition-facts-completed');
 var d=await r.json();
+var apiH='';
 if(d.products&&d.products.length){
-var h='';d.products.forEach(function(p){
+d.products.forEach(function(p){
 var n=p.nutriments||{};
 var m=parseNut(n);
 var kcal=m.kcal,b=m.b,w=m.w,t=m.t;
 if(!kcal&&!b&&!w&&!t)return;
 var nm=(p.product_name||'?').substring(0,40);
-h+='<div class="calc-prod" onclick="edSearchAdd(\''+nm.replace(/'/g,"\\\'")+'\','+kcal+','+b+','+w+','+t+')"><span class="cp-name">'+nm+'</span><span class="cp-macro">'+kcal+'/'+b+'B/'+w+'W/'+t+'T</span></div>';
-});
+apiH+='<div class="calc-prod" onclick="edSearchAdd(\''+nm.replace(/'/g,"\\'")+'\','+kcal+','+b+','+w+','+t+')"><span class="cp-name">'+nm+'</span><span class="cp-macro">'+kcal+'/'+b+'B/'+w+'W/'+t+'T</span></div>';
+});}
+var h='';
+if(localH)h+=localH;
+if(apiH)h+=(localH?'<div style="font-size:.65em;color:var(--t3);padding:6px 0;border-top:1px solid var(--brd)">ONLINE:</div>':'')+apiH;
+if(!h)h='<div class="al warn">Brak wynik\u00f3w. Spr\u00f3buj innej nazwy.</div>';
 document.getElementById('edSearchRes').innerHTML=h;
-}else{document.getElementById('edSearchRes').innerHTML='<div class="al warn">Brak wynik\u00f3w</div>';}
-}catch(e){document.getElementById('edSearchRes').innerHTML='<div class="al err">B\u0142\u0105d API</div>';}
+}catch(e){
+document.getElementById('edSearchRes').innerHTML=localH||'<div class="al err">B\u0142\u0105d API</div>';
+}
 }
 
 function edSearchAdd(name,kcal,b,w,t){
@@ -3611,26 +3628,49 @@ var q=document.getElementById('calcQ').value.trim();
 if(!q){toast('Wpisz nazw\u0119',false);return}
 if(_calcTab!=='api'){_calcTab='api';calcTab('api')}
 document.getElementById('calcResults').innerHTML='<div class="al info">\u23f3 Szukam online...</div>';
+// First: check PROD_DB for local matches
+var qLow=dePolish(q.toLowerCase());
+var localH='';
+Object.entries(PROD_DB).forEach(function(e){
+var name=e[0],m=e[1];
+if(dePolish(name.toLowerCase()).includes(qLow)||qLow.includes(dePolish(name.toLowerCase()).substring(0,4))){
+localH+='<div class="calc-prod" onclick="calcAddToBasket(\''+name.replace(/'/g,"\\'")+'\''+','+m.kcal+','+m.b+','+m.w+','+m.t+')"><span class="cp-name">'+name+' <span style="color:var(--gr);font-size:.7em">\u2705 lokalna baza</span></span><span class="cp-macro">'+m.kcal+'/'+m.b+'B/'+m.w+'W/'+m.t+'T</span></div>';
+}});
+(S.customProducts||[]).forEach(function(cp){
+if(dePolish(cp.name.toLowerCase()).includes(qLow)||qLow.includes(dePolish(cp.name.toLowerCase()).substring(0,4))){
+localH+='<div class="calc-prod" onclick="calcAddToBasket(\''+cp.name.replace(/'/g,"\\'")+'\''+','+cp.kcal+','+cp.b+','+cp.w+','+cp.t+')"><span class="cp-name">'+cp.name+' <span style="color:var(--cy);font-size:.7em">\u2605 w\u0142asny</span></span><span class="cp-macro">'+cp.kcal+'/'+cp.b+'B/'+cp.w+'W/'+cp.t+'T</span></div>';
+}});
 try{
-var r=await fetch('https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&json=1&page_size=15&fields=product_name,brands,nutriments,code,image_front_small_url');
+// API with nutrition-facts-completed filter + Polish priority
+var url='https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&json=1&page_size=20&fields=product_name,brands,nutriments,code,image_front_small_url&lc=pl&tagtype_0=states&tag_contains_0=contains&tag_0=en:nutrition-facts-completed';
+var r=await fetch(url);
 var d=await r.json();
+var apiH='';
 if(d.products&&d.products.length){
-var h='';d.products.forEach(function(p){
+d.products.forEach(function(p){
 var n=p.nutriments||{};
 var m=parseNut(n);
 var kcal=m.kcal,b=m.b,w=m.w,t=m.t;
-if(!kcal&&!b&&!w&&!t)return; // skip products with no nutritional data
+if(!kcal&&!b&&!w&&!t)return;
 var nm=(p.product_name||'?').substring(0,45);
 var brand=p.brands||'';
 var img=p.image_front_small_url||'';
-h+='<div class="calc-prod" onclick="calcAddToBasket(\''+nm.replace(/'/g,"\\'")+'\''+','+kcal+','+b+','+w+','+t+')">';
-if(img)h+='<img src="'+img+'">';
-h+='<div><span class="cp-name">'+nm+'</span>'+(brand?'<div style="font-size:.7em;color:var(--t3)">'+brand+'</div>':'')+'</div>';
-h+='<span class="cp-macro">'+kcal+'/'+b+'B/'+w+'W/'+t+'T</span></div>';
-});
+apiH+='<div class="calc-prod" onclick="calcAddToBasket(\''+nm.replace(/'/g,"\\'")+'\''+','+kcal+','+b+','+w+','+t+')">';
+if(img)apiH+='<img src="'+img+'">';
+apiH+='<div><span class="cp-name">'+nm+'</span>'+(brand?'<div style="font-size:.7em;color:var(--t3)">'+brand+'</div>':'')+'</div>';
+apiH+='<span class="cp-macro">'+kcal+'/'+b+'B/'+w+'W/'+t+'T</span></div>';
+});}
+var h='';
+if(localH)h+='<div style="color:var(--gr);font-size:.72em;font-weight:700;padding:6px 0">\ud83d\udce6 Z BAZY DIETY:</div>'+localH;
+if(apiH)h+=(localH?'<div style="color:var(--t3);font-size:.72em;font-weight:700;padding:8px 0 4px;border-top:1px solid var(--brd);margin-top:6px">\ud83c\udf10 ONLINE (Open Food Facts):</div>':'')+apiH;
+if(!h)h='<div class="al warn">Brak wynik\u00f3w z danymi \u017cywieniowymi. Spr\u00f3buj innej nazwy lub dodaj r\u0119cznie.</div>';
 document.getElementById('calcResults').innerHTML=h;
-}else{document.getElementById('calcResults').innerHTML='<div class="al warn">Brak wynik\u00f3w</div>';}
-}catch(e){document.getElementById('calcResults').innerHTML='<div class="al err">B\u0142\u0105d API</div>';}
+}catch(e){
+var h=localH||'';
+if(!h)h='<div class="al err">B\u0142\u0105d API. Sprawd\u017a internet.</div>';
+else h='<div style="color:var(--gr);font-size:.72em;font-weight:700;padding:6px 0">\ud83d\udce6 Z BAZY DIETY (offline):</div>'+localH;
+document.getElementById('calcResults').innerHTML=h;
+}
 }
 
 function calcScanEan(){go('scan');toast('Zeskanuj kod, potem wr\u00f3\u0107 do kalkulatora');}
