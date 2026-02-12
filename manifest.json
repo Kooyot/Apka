@@ -1,12 +1,14 @@
 {
   "name": "Diet Master V7 — ULTRA",
-  "short_name": "Diet V7",
-  "description": "Tracker diety, wagi, wody i suplementów",
-  "start_url": "./index.html",
+  "short_name": "Diet Master",
+  "description": "Dieta, makra, zakupy, waga — wszystko w jednym",
+  "start_url": "./DIET-MASTER-V7.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#06090f",
   "theme_color": "#ff6b2b",
+  "lang": "pl",
   "categories": ["health", "fitness", "food"],
   "icons": [
     {
@@ -20,33 +22,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "share_target": {
-    "action": "./index.html",
-    "method": "GET",
-    "params": {
-      "text": "shared_text"
-    }
-  },
-  "shortcuts": [
-    {
-      "name": "Dodaj wodę",
-      "short_name": "Woda",
-      "url": "./index.html#woda",
-      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
-    },
-    {
-      "name": "Zapisz wagę",
-      "short_name": "Waga",
-      "url": "./index.html#waga",
-      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
-    },
-    {
-      "name": "Suplementy",
-      "short_name": "Supl",
-      "url": "./index.html#supp",
-      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
     }
   ]
 }

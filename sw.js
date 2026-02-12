@@ -1,7 +1,7 @@
-const VERSION = 'dmv7-v7.3';
-const ASSETS = [
+const CACHE = 'dm7-v443';
+const URLS = [
   './',
-  './index.html',
+  './DIET-MASTER-V7.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
@@ -9,41 +9,33 @@ const ASSETS = [
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(VERSION).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(cache => {
+      return Promise.all(
+        URLS.map(url => 
+          fetch(url).then(r => {
+            if (r.ok) cache.put(url, r);
+          }).catch(() => {})
+        )
+      );
+    }).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim()).then(() => {
-      self.clients.matchAll().then(clients => {
-        clients.forEach(c => c.postMessage({ type: 'UPDATE_READY', version: VERSION }));
-      });
-    })
+    caches.keys().then(keys => 
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    fetch(e.request).then(resp => {
-      if (resp && resp.status === 200) {
-        const clone = resp.clone();
-        caches.open(VERSION).then(c => c.put(e.request, clone));
-      }
-      return resp;
+    fetch(e.request).then(response => {
+      const clone = response.clone();
+      caches.open(CACHE).then(cache => cache.put(e.request, clone));
+      return response;
     }).catch(() => caches.match(e.request))
   );
-});
-
-self.addEventListener('periodicsync', e => {
-  if (e.tag === 'update-badge') {
-    e.waitUntil(
-      self.clients.matchAll().then(clients => {
-        clients.forEach(c => c.postMessage({ type: 'UPDATE_BADGE' }));
-      })
-    );
-  }
 });
